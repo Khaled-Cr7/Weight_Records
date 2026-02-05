@@ -1,117 +1,125 @@
-import { View, Text, ImageBackground } from 'react-native'
-import React from 'react'
-import { Tabs } from 'expo-router'
-import {images} from '@/constants/images'
-import {icons} from '@/constants/icons'
-import { Image } from 'react-native'
+import { View, Text, ImageBackground, Animated, Image } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Tabs } from 'expo-router';
+import { images } from '@/constants/images';
+import { icons } from '@/constants/icons';
 
-const TabIcon = ({ focused, icon, title }: any) => {
-  if (focused) {
-    return (
-      <ImageBackground source={images.highlight} className="flex flex-row w-full flex-1 min-w-[60px] min-h-16 mt-4 justify-center items-center  overflow-hidden">
-                      <Image source={icon} className="size-6 position-relative"/>
-                      <Text className="text-primary text-base font-semibold ml-2">{title}</Text>
-                    
-                    </ImageBackground>
+// Enhanced TabIcon with Animation
+const TabIcon = ({ focused, icon, title, inactiveIcon }: any) => {
+  const scaleValue = useRef(new Animated.Value(1)).current;
 
-    )
-  } else { 
-      if (icon === icons.homeV2) {
-        icon = icons.home
-      }
-      if (icon === icons.trainingV2) {
-        icon = icons.training
-      }
-    return (
-      <Image source={icon} className="size-6 mt-3"/>
-    )
-  }
+  useEffect(() => {
+    Animated.spring(scaleValue, {
+      toValue: focused ? 1.1 : 1,
+      useNativeDriver: true,
+      friction: 4,
+    }).start();
+  }, [focused]);
 
-}
+  const displayIcon = focused ? icon : (inactiveIcon || icon);
 
+  return (
+    <Animated.View 
+      style={{ transform: [{ scale: scaleValue }] }}
+      className="items-center justify-center"
+    >
+      {focused ? (
+        <ImageBackground 
+          // source={images.highlight} 
+          className="flex flex-row min-w-[65px] h-16 justify-center items-center rounded-full overflow-hidden px-3 mt-8"
+          resizeMode="cover"
+        >
+          <Image source={displayIcon} className="size-5" style={{ tintColor: '#344c66' }} />
+          {title && <Text className="text-secondary text-xs font-bold ml-2" numberOfLines={1}>{title}</Text>}
+        </ImageBackground>
+      ) : (
+        <View className="p-2">
+          <Image source={displayIcon} className="size-6 mt-8" style={{ opacity: 0.6 }} />
+        </View>
+      )}
+    </Animated.View>
+  );
+};
 
 const _layout = () => {
   return (
+    
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarItemStyle: {
-          width: '100%',
-          height: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
+        tabBarStyle: {
+          backgroundColor: '#ffffff', // Clean white background
+          borderRadius: 30,
+          position: 'absolute',
+          bottom: 30,
+          left: 20,
+          right: 20,
+          height: 70,
+          elevation: 5, // Shadow for Android
+          shadowColor: '#000', // Shadow for iOS
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          borderTopWidth: 0, // Remove default border
+          paddingBottom: 0,
+          
         },
-          tabBarStyle: {
-            backgroundColor: '#dfe7ea',
-            borderRadius: 50,
-            position: 'absolute',
-            marginHorizontal: 40,
-            marginBottom: 36,
-            height: 52,
-            overflow: 'hidden',
-            borderWidth: 1,
-            borderColor: '#344c66',
-          },
       }}
-
-      
     >
-
-
-      <Tabs.Screen name="index" 
+      <Tabs.Screen 
+        name="index" 
         options={{ 
           title: 'Home', 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon  focused={focused} icon={icons.homeV2} title=""/>
+            <TabIcon focused={focused} icon={icons.homeV2} inactiveIcon={icons.home} title="Home"/>
           ),
         }} 
       />
-
-      <Tabs.Screen name="training" 
+      <Tabs.Screen 
+        name="training" 
         options={{ 
           title: 'Training', 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.trainingV2} title=""/>
+            <TabIcon focused={focused} icon={icons.thunderV2} inactiveIcon={icons.thunder} title="Training"/>
           ),
         }} 
       />
-
-      <Tabs.Screen name="message" 
+      <Tabs.Screen 
+        name="message" 
         options={{ 
-          title: 'Training', 
+          title: 'Messages', 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.message} title=""/>
+            <TabIcon focused={focused} icon={icons.messageV2} inactiveIcon={icons.message} title="Chat"/>
           ),
         }} 
       />
-
-      <Tabs.Screen name="friends" 
+      <Tabs.Screen 
+        name="friends" 
         options={{ 
-          title: 'Training', 
+          title: 'Friends', 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.friends} title=""/>
+            <TabIcon focused={focused} icon={icons.friendsV2} inactiveIcon={icons.friends} title="Friends"/>
           ),
         }} 
       />
-
-      <Tabs.Screen name="profile" 
+      <Tabs.Screen 
+        name="profile" 
         options={{ 
-          title: 'Training', 
+          title: 'Profile', 
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.profile} title=""/>
+            <TabIcon focused={focused} icon={icons.profileV2} inactiveIcon={icons.profile} title="Profile"/>
           ),
         }} 
       />
-
-
-
     </Tabs>
-  )
-}
 
-export default _layout
+    
+  );
+};
+
+export default _layout;

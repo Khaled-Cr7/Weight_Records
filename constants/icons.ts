@@ -6,6 +6,11 @@ import trainingV2 from '@/assets/icons/training_v2.png';
 import message from '@/assets/icons/message.png';
 import friends from '@/assets/icons/friends.png';
 import profile from '@/assets/icons/profile.png';
+import thunder from '@/assets/icons/thunder.png';
+import thunderV2 from '@/assets/icons/thunder_v2.png';
+import messageV2 from '@/assets/icons/message_v2.png';
+import friendsV2 from '@/assets/icons/friends_v2.png';
+import profileV2 from '@/assets/icons/profile_v2.png';
 
 export const icons = {
     home,
@@ -16,4 +21,9 @@ export const icons = {
     message,
     friends,
     profile,
+    thunder,
+    thunderV2,
+    messageV2,
+    friendsV2,
+    profileV2,
 };
