@@ -1,10 +1,35 @@
-import { View, Text, ImageBackground, Animated, Image } from 'react-native';
-import React, { useRef, useEffect } from 'react';
-import { Tabs } from 'expo-router';
-import { images } from '@/constants/images';
 import { icons } from '@/constants/icons';
+import { useLoading } from '@/context/LoadingContext';
+import { Tabs, useRouter, Redirect } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Image, ImageBackground, Text, TouchableOpacity, View } from 'react-native';
 
-// Enhanced TabIcon with Animation
+export const AppIcon = () =>{
+   const {setLoading} = useLoading();
+   const router = useRouter();
+   return(
+
+    <TouchableOpacity
+          onPress={async () => {
+              setLoading(true);
+              try{
+                await new Promise(resolve => setTimeout(resolve, 250));
+                router.push("/") as any
+              } finally{
+                setTimeout(() => setLoading(false), 250);
+  
+              }
+          } 
+  
+  
+          }>
+          <Image source={icons.appIcon} className="size-40 mt-12 self-center" />
+          </TouchableOpacity>
+   )
+}
+
+   
+  
 const TabIcon = ({ focused, icon, title, inactiveIcon }: any) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
@@ -42,6 +67,15 @@ const TabIcon = ({ focused, icon, title, inactiveIcon }: any) => {
 };
 
 const _layout = () => {
+
+  const router = useRouter();
+
+  const isAuthenticated = false;
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/Sign_In" />;
+  }
+
   return (
     
     <Tabs
@@ -116,6 +150,31 @@ const _layout = () => {
           ),
         }} 
       />
+  {/* 
+        <Tabs.Screen 
+          name="schedule/broSplit" // or just "schedule"
+          options={{ 
+            href: null, // This hides the tab from the bar
+          }} 
+        />
+        <Tabs.Screen 
+          name="schedule/pplSplit" // or just "schedule"
+          options={{ 
+            href: null, // This hides the tab from the bar
+          }} 
+        />
+        <Tabs.Screen 
+          name="schedule/ulSplit" // or just "schedule"
+          options={{ 
+            href: null, // This hides the tab from the bar
+          }} 
+        />
+        <Tabs.Screen 
+          name="schedule/fullSplit" // or just "schedule"
+          options={{ 
+            href: null, // This hides the tab from the bar
+          }} 
+        /> */}
     </Tabs>
 
     
