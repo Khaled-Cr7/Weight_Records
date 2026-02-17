@@ -1,17 +1,42 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, KeyboardAvoidingView, Platform, ScrollView, Dimensions } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { icons } from '@/constants/icons'
-import { Slot } from 'expo-router'
-const _layout = () => {
-  return (
-    <SafeAreaView className='bg-primary flex-1'>
-        <Image source= {icons.appIcon} className='size-40 self-center'/>
+import { Slot, usePathname } from 'expo-router'
+import CustomInput from '@/components/CustomInput'
+import CustomButton from '@/components/CustomButton'
 
-        <View className="flex-1 px-5">
-           <Slot />
+
+
+const _layout = () => {
+  const pathname = usePathname();
+
+  const headerMessage = pathname.includes('Sign_In') 
+    ? "Welcome Back!" 
+    : "Create an Account";
+
+
+  const subMessage = pathname.includes('Sign_In')
+    ? "Please sign in to continue"
+    : "Join us and start your journey";
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView className= "bg-white h-full" keyboardShouldPersistTaps="handled">
+        <View className='w-full relative bg-primary justify-center' style={{height: Dimensions.get('screen').height/2.5}}>
+        <Image source={icons.appIcon} className="self-center size-48 absolute"/>
+        <Text className='self-center flex-1 text-3xl font-bold color-secondary -bottom-56' numberOfLines={1}>
+          {headerMessage}
+        </Text>
+        <Text className='self-center flex-1 text-l color-secondary -bottom-16'>
+          {subMessage}
+        </Text>
         </View>
-    </SafeAreaView>
+
+
+           <Slot />
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
