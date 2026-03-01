@@ -2,13 +2,17 @@ import { View, Text, Image, KeyboardAvoidingView, Platform, ScrollView, Dimensio
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { icons } from '@/constants/icons'
-import { Slot, usePathname } from 'expo-router'
+import { Redirect, Slot, usePathname } from 'expo-router'
 import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
+import useAuthStore from '@/store/auth.store'
 
 
 
-const _layout = () => {
+const AuthLayout = () => {
+  const {isAuthenticated} = useAuthStore();
+  if (isAuthenticated) return <Redirect href="/" />
+
   const pathname = usePathname();
 
   const headerMessage = pathname.includes('Sign_In') 
@@ -23,21 +27,20 @@ const _layout = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView className= "bg-white h-full" keyboardShouldPersistTaps="handled">
-        <View className='w-full relative bg-primary justify-center' style={{height: Dimensions.get('screen').height/2.5}}>
-        <Image source={icons.appIcon} className="self-center size-48 absolute"/>
-        <Text className='self-center flex-1 text-3xl font-bold color-secondary -bottom-56' numberOfLines={1}>
-          {headerMessage}
-        </Text>
-        <Text className='self-center flex-1 text-l color-secondary -bottom-16'>
-          {subMessage}
-        </Text>
-        </View>
+        <SafeAreaView className='w-full relative bg-primary justify-center items-center' style={{height: Dimensions.get('screen').height/2.5}}>
+          <Image source={icons.appIcon} className="size-48 mb-4"/>
+          <Text className="text-3xl font-bold text-secondary mb-4">
+            {headerMessage}
+          </Text>
 
-
+          <Text className="text-base text-secondary mt-2">
+            {subMessage}
+          </Text>
+        </SafeAreaView>
            <Slot />
       </ScrollView>
     </KeyboardAvoidingView>
   )
 }
 
-export default _layout
+export default AuthLayout

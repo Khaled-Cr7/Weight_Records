@@ -6,10 +6,13 @@ import LoadingScreen from "./loading"
 import React from "react";
 import { LoadingProvider } from '@/context/LoadingContext';
 import { ExerciseService } from '@/services/exerciseService';
+import useAuthStore from "@/store/auth.store";
 
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
+
+  const {isLoading, fetchAuthenticatedUser} = useAuthStore();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -26,6 +29,13 @@ export default function RootLayout() {
     }
     prepare();
   }, []);
+
+  useEffect(() => {
+    fetchAuthenticatedUser()
+  }, []);
+
+  if (isLoading) return null;
+
 
   // Show the loader while the app is doing its initial setup
   if (!isReady) return <LoadingScreen />;

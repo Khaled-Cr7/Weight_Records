@@ -4,18 +4,20 @@ import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import { useState } from 'react'
+import { createUser } from '@/lib/appwrite'
+import { SafeAreaView } from 'react-native-safe-area-context'
 const Sign_Up = () => {
 
   const [isSubmitting, setisSubmitting] = useState(false)
     const [form, setform] = useState({name:"", email:"", password:""})
     
     const submit = async() => {
-        if (!form.email || !form.password || !form.name) return Alert.alert('Error', 'Please enter valid name, email address, and Password')
+        const {email, password, name} = form;
+        if (!email || !password || !name) return Alert.alert('Error', 'Please enter valid name, email address, and Password')
   
         setisSubmitting(true);
         try{
-  
-          Alert.alert('Success', 'User Signed Up successfully');
+          await createUser({email, password,name,})
           router.replace('./')
         } catch(error:any){
           Alert.alert('Error', error.message)
@@ -26,7 +28,7 @@ const Sign_Up = () => {
 
 
   return (
-    <View className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
+    <SafeAreaView className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
 
       <CustomInput
                 placeholder="Enter your Name"
@@ -67,7 +69,7 @@ const Sign_Up = () => {
             </View>
 
 
-    </View>
+    </SafeAreaView>
   )
 }
 

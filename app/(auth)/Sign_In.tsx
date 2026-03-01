@@ -4,18 +4,21 @@ import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import { useState } from 'react'
+import { SignIn } from '@/lib/appwrite'
+import { SafeAreaView } from 'react-native-safe-area-context'
 const Sign_IN = () => {
 
   const [isSubmitting, setisSubmitting] = useState(false)
   const [form, setform] = useState({email:"", password:""})
 
   const submit = async() => {
-      if (!form.email || !form.password) return Alert.alert('Error', 'Please enter valid email address and Password')
+      const {email, password} = form;
+      if (!email || !password) return Alert.alert('Error', 'Please enter valid email address and Password')
 
       setisSubmitting(true);
       try{
 
-        Alert.alert('Success', 'User Signed in successfully');
+        await SignIn ({email, password})
         router.replace('./')
       } catch(error:any){
         Alert.alert('Error', error.message)
@@ -26,7 +29,7 @@ const Sign_IN = () => {
 
 
   return (
-    <View className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
+    <SafeAreaView className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
       <CustomInput
                 placeholder="Enter your email"
                 value={form.email}
@@ -56,7 +59,7 @@ const Sign_IN = () => {
           Sign Up        
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
     
   )
 }

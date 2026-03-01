@@ -1,5 +1,6 @@
 import { icons } from '@/constants/icons';
 import { useLoading } from '@/context/LoadingContext';
+import useAuthStore from '@/store/auth.store';
 import { Tabs, useRouter, Redirect } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Image, ImageBackground, Text, TouchableOpacity, View } from 'react-native';
@@ -66,11 +67,11 @@ const TabIcon = ({ focused, icon, title, inactiveIcon }: any) => {
   );
 };
 
-const _layout = () => {
+const TabLayout = () => {
 
   const router = useRouter();
 
-  const isAuthenticated = false;
+  const {isAuthenticated} = useAuthStore();
 
   if (!isAuthenticated) {
     return <Redirect href="/(auth)/Sign_In" />;
@@ -181,4 +182,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
+export default TabLayout;

@@ -1,4 +1,5 @@
 import { Image } from "react-native";
+import { Models } from "react-native-appwrite";
 
 interface CustomInputProps {
     placeholder: string;
@@ -11,7 +12,7 @@ interface CustomInputProps {
 
 interface CustomButtonProps{
     onPress: () => void;
-    title: string;
+    title?: string;
     style?: string;
     textStyle?: string;
     leftIcon?: React.ReactNode;
@@ -19,8 +20,27 @@ interface CustomButtonProps{
 
 
 }
+interface CreateUserParams{
+    email: string;
+    name: string;
+    password: string;
+}
+
+interface SignInParams{
+    email: string;
+    password: string;
+}
+
+export interface User extends Models.Document {
+    name: string;
+    email: string;
+    avatar: string;
+}
 
 export {
     CustomInputProps,
-    CustomButtonProps
+    CustomButtonProps,
+    CreateUserParams,
+    SignInParams,
+    
 };
