@@ -91,7 +91,7 @@ export const getCurrentUser = async () => {
     return currentUser.rows[0];
 
     } catch (e) {
-        console.log(e);
+        console.log("User is guest or not logged in");
         throw new Error(e as string);
 
     }
