@@ -1,31 +1,14 @@
-import { View, Text, Alert} from 'react-native'
+import { View, Text} from 'react-native'
 import React from 'react'
 import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
-import { Link, router } from 'expo-router'
+import { Link } from 'expo-router'
 import { useState } from 'react'
-import { createUser } from '@/lib/appwrite'
 import { SafeAreaView } from 'react-native-safe-area-context'
 const Sign_Up = () => {
 
-  const [isSubmitting, setisSubmitting] = useState(false)
     const [form, setform] = useState({name:"", email:"", password:""})
     
-    const submit = async() => {
-        const {email, password, name} = form;
-        if (!email || !password || !name) return Alert.alert('Error', 'Please enter valid name, email address, and Password')
-  
-        setisSubmitting(true);
-        try{
-          await createUser({email, password,name,})
-          router.replace('./')
-        } catch(error:any){
-          Alert.alert('Error', error.message)
-        } finally{
-          setisSubmitting(false);
-        }
-    }
-
 
   return (
     <SafeAreaView className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
@@ -52,12 +35,7 @@ const Sign_Up = () => {
                 label="Password"
                 secureTextEntery={true}       
               />
-      <CustomButton
-        title="Sign Up"
-        isLoading={isSubmitting}
-        onPress={submit}
-              
-      />
+      <CustomButton title="Sign Up" onPress={() => {}} />
 
       <View className='flex justify-center mt-5 flex-row gap-2'>
               <Text className="text-gray-300">

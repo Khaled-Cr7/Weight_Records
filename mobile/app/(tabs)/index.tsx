@@ -6,8 +6,7 @@ import { images } from '@/constants/images';
 import { useRouter, Href, Redirect } from 'expo-router';
 import { useLoading } from '@/context/LoadingContext';
 import AppIcon from "@/components/AppIcon"
-import useAuthStore from '@/store/auth.store';
-import { signOut } from '@/lib/appwrite';
+import { session } from '@/constants/session';
 import { Button } from '@react-navigation/elements';
 
 
@@ -104,11 +103,6 @@ export default function Index() {
   const {setLoading} = useLoading();
   const router = useRouter();
 
-  const { user, isAuthenticated, isLoading, signOut } = useAuthStore();
-  if (!isLoading && !isAuthenticated) {
-    return <Redirect href="/(auth)/Sign_In" />;
-  }
-  console.log("User:", JSON.stringify(user, null, 2));
 
   return (
     
@@ -126,7 +120,7 @@ export default function Index() {
 
         <TouchableOpacity 
           className="bg-red-500 p-3 rounded-lg mt-4 items-center" 
-          onPress={signOut}
+          onPress={() => { session.isGuest = false; router.replace('/(auth)/Sign_In'); }}
         >
           <Text className="text-white font-bold">Sign Out</Text>
         </TouchableOpacity>

@@ -1,66 +1,53 @@
-import React from 'react'
-import { Text, View, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { Text, View, TouchableOpacity } from 'react-native'
 import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
-import { useState } from 'react'
-import { SignIn } from '@/lib/appwrite'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { session } from '@/constants/session'
+
 const Sign_IN = () => {
+  const [form, setform] = useState({ email: "", password: "" })
 
-  const [isSubmitting, setisSubmitting] = useState(false)
-  const [form, setform] = useState({email:"", password:""})
-
-  const submit = async() => {
-      const {email, password} = form;
-      if (!email || !password) return Alert.alert('Error', 'Please enter valid email address and Password')
-
-      setisSubmitting(true);
-      try{
-
-        await SignIn ({email, password})
-        router.replace('./')
-      } catch(error:any){
-        Alert.alert('Error', error.message)
-      } finally{
-        setisSubmitting(false);
-      }
+  const joinAsGuest = () => {
+    session.isGuest = true
+    router.replace('/')
   }
-
 
   return (
     <SafeAreaView className="flex-1 gap-10 bg-white rounded-t-[40px] p-7 -mt-10">
       <CustomInput
-                placeholder="Enter your email"
-                value={form.email}
-                onChangeText={(text) => setform((prev) => ({...prev, email:text}))}
-                label="Email"
-                keyboardType="email-address"        
-              />
+        placeholder="Enter your email"
+        value={form.email}
+        onChangeText={(text) => setform((prev) => ({ ...prev, email: text }))}
+        label="Email"
+        keyboardType="email-address"
+      />
       <CustomInput
-                placeholder="Enter your Password"
-                value={form.password}
-                onChangeText={(text) => setform((prev) => ({...prev, password:text}))}
-                label="Password"
-                secureTextEntery={true}       
-              />
-      <CustomButton
-        title="Sign In"
-        isLoading={isSubmitting}
-        onPress={submit}
-              
+        placeholder="Enter your Password"
+        value={form.password}
+        onChangeText={(text) => setform((prev) => ({ ...prev, password: text }))}
+        label="Password"
+        secureTextEntery={true}
       />
 
+      {/* TODO: real sign in */}
+      <CustomButton title="Sign In" onPress={() => {}} />
+
+      <TouchableOpacity
+        className="p-4 rounded-3xl items-center border border-secondary"
+        onPress={joinAsGuest}
+      >
+        <Text className="text-secondary font-bold">Join as Guest</Text>
+      </TouchableOpacity>
+
       <View className='flex justify-center mt-5 flex-row gap-2'>
-        <Text className="text-gray-300">
-          Don't have an account?
-        </Text>
+        <Text className="text-gray-300">Don't have an account?</Text>
         <Link href="/Sign_Up" className="font-bold text-secondary">
-          Sign Up        
+          Sign Up
         </Link>
       </View>
     </SafeAreaView>
-    
   )
 }
 

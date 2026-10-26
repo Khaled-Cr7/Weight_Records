@@ -5,13 +5,10 @@ import { icons } from '@/constants/icons'
 import { Redirect, Slot, usePathname } from 'expo-router'
 import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
-import useAuthStore from '@/store/auth.store'
 
 
 
 const AuthLayout = () => {
-  const {isAuthenticated} = useAuthStore();
-  if (isAuthenticated) return <Redirect href="/" />
 
   const pathname = usePathname();
 
