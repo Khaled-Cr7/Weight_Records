@@ -1,43 +1,66 @@
-import { View, Text, Image, KeyboardAvoidingView, Platform, ScrollView, Dimensions } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { icons } from '@/constants/icons'
-import { Redirect, Slot, usePathname } from 'expo-router'
-import CustomInput from '@/components/CustomInput'
-import CustomButton from '@/components/CustomButton'
 
+import React from 'react';
+import {
+  View,
+  Text,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Slot, usePathname } from 'expo-router';
 
-
-const AuthLayout = () => {
-
+export default function AuthLayout() {
   const pathname = usePathname();
-
-  const headerMessage = pathname.includes('Sign_In') 
-    ? "Welcome Back!" 
-    : "Create an Account";
-
-
-  const subMessage = pathname.includes('Sign_In')
-    ? "Please sign in to continue"
-    : "Join us and start your journey";
+  const isSignIn = pathname.includes('Sign_In');
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView className= "bg-white h-full" keyboardShouldPersistTaps="handled">
-        <SafeAreaView className='w-full relative bg-primary justify-center items-center' style={{height: Dimensions.get('screen').height/2.5}}>
-          <Image source={icons.appIcon} className="size-48 mb-4"/>
-          <Text className="text-3xl font-bold text-secondary mb-4">
-            {headerMessage}
-          </Text>
+    <SafeAreaView className="flex-1 bg-[#0B1422]">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="flex-grow px-7"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Branding */}
+          <View className="items-center pt-12 pb-10">
+            <Image
+              source={require('../../assets/images/repsy-symbol-transparent.png')}
+              className="w-24 h-24"
+              resizeMode="contain"
+            />
 
-          <Text className="text-base text-secondary mt-2">
-            {subMessage}
-          </Text>
-        </SafeAreaView>
-           <Slot />
-      </ScrollView>
-    </KeyboardAvoidingView>
-  )
+            <Text className="text-[#F1F5FB] text-3xl font-bold tracking-wider mt-3">
+              Repsy
+            </Text>
+
+            <Text className="text-[#91A5C0] text-xs tracking-widest mt-2">
+              Train. Track. Progress.
+            </Text>
+          </View>
+
+          {/* Page heading */}
+          <View className="mb-8">
+            <Text className="text-[#F1F5FB] text-[30px] font-bold">
+              {isSignIn ? 'Welcome back' : 'Create your account'}
+            </Text>
+
+            <Text className="text-[#91A5C0] text-sm mt-2">
+              {isSignIn
+                ? 'Sign in to continue your fitness journey.'
+                : 'Start tracking your progress with Repsy.'}
+            </Text>
+          </View>
+
+          {/* Sign In or Sign Up content */}
+          <Slot />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }
-
-export default AuthLayout

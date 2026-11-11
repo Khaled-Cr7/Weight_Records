@@ -15,15 +15,15 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        // This now works because we added it to the Service
+        await SplashScreen.hideAsync();
         await ExerciseService.initialize();
-      } catch (e) {
-        console.warn(e);
+      } catch (error) {
+        console.warn(error);
       } finally {
         setIsReady(true);
-        await SplashScreen.hideAsync();
       }
     }
+
     prepare();
   }, []);
 
