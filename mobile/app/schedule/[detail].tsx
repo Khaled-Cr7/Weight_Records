@@ -1,26 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, Stack } from 'expo-router';
-import { Image, Text, View, ScrollView } from 'react-native';
+import { ActivityIndicator, Image, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { fetchExerciseDetails, getExerciseImage } from '../../services/exerciseService';
 import { ExerciseService } from '../../services/exerciseService';
+import type { Exercise } from '../../services/types/exercise';
 import { CustomBackButton } from "@/components/CustomBackButton"
 
 export default function ExerciseDetail() {
   const { detail, exerciseId, sets, reps } = useLocalSearchParams();
-  
-  // Fetch the exercise details using the ID
-  const exercise = fetchExerciseDetails((exerciseId || detail) as string);
-  
-  if (!exercise) {
+  const id = (exerciseId || detail) as string;
+
+  const [exercise, setExercise] = useState<Exercise | null>(null);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus('loading');
+
+    ExerciseService.getById(id)
+      .then((data) => {
+        if (cancelled) return;
+        setExercise(data);
+        setStatus('ready');
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (status === 'loading') {
     return (
-      <SafeAreaView className="flex-1 bg-primary p-5">
-        <Text className="text-xl text-secondary">Exercise not found</Text>
+      <SafeAreaView className="flex-1 bg-primary items-center justify-center">
+        <ActivityIndicator color="#344c66" />
       </SafeAreaView>
     );
   }
 
-  const isCustom = ExerciseService.isCustomExercise(exercise.id);
+  if (status === 'error' || !exercise) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary p-5">
+        <Text className="text-xl text-secondary">Could not load this exercise</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <>
@@ -42,9 +68,9 @@ export default function ExerciseDetail() {
         </Text>
         <ScrollView className="p-5">
           {/* Exercise Image */}
-          {exercise.images?.[0] && (
+          {exercise.image && (
             <Image 
-              source={{ uri: getExerciseImage(exercise.images[0], isCustom) }}
+              source={{ uri: exercise.image }}
               className="w-full h-64 rounded-xl mb-5"
               resizeMode="cover"
             />

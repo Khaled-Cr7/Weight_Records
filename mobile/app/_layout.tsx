@@ -5,7 +5,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import LoadingScreen from "./loading"
 import React from "react";
 import { LoadingProvider } from '@/context/LoadingContext';
-import { ExerciseService } from '@/services/exerciseService';
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -16,7 +15,8 @@ export default function RootLayout() {
     async function prepare() {
       try {
         await SplashScreen.hideAsync();
-        await ExerciseService.initialize();
+        // Keeps the loading screen visible for a moment
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (error) {
         console.warn(error);
       } finally {

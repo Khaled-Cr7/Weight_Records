@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Image, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ExerciseService, getExerciseImage } from '../../services/exerciseService';
+import { ExerciseService } from '../../services/exerciseService';
+import type { ExerciseListItem } from '../../services/types/exercise';
 import { workoutPlans } from '../../data/workouts';
 import { images } from '@/constants/images';
 import { TouchableOpacity } from 'react-native';
@@ -20,6 +21,38 @@ export default function WorkoutDetail() {
     focus: "General Training",
     schedule: []
   };
+
+  // Exercise matches from the API, keyed by the name used in the plan.
+  // undefined = still loading, null = no match found, 'error' = request failed
+  const [matches, setMatches] = useState<Record<string, ExerciseListItem | null | 'error'>>({});
+
+  // When a day is opened, look up its exercises we haven't fetched yet
+  useEffect(() => {
+    if (expandedDay === null) return;
+
+    const names = (data.schedule[expandedDay]?.exercises ?? [])
+      .map((exercise) => exercise.name)
+      .filter((name) => matches[name] === undefined || matches[name] === 'error');
+    if (names.length === 0) return;
+
+    let cancelled = false;
+    Promise.all(names.map((name) => ExerciseService.findByName(name).catch(() => 'error' as const))).then(
+      (found) => {
+        if (cancelled) return;
+        setMatches((previous) => {
+          const next = { ...previous };
+          names.forEach((name, i) => {
+            next[name] = found[i];
+          });
+          return next;
+        });
+      }
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [expandedDay]);
 
   return (
     <>
@@ -69,8 +102,13 @@ export default function WorkoutDetail() {
               {isExpanded && hasExercises && (
                 <View className="mt-3 px-1">
                   {dayPlan.exercises.map((exercise, i) => {
-                    const exerciseDetails = ExerciseService.smartSearch(exercise.name);
-                    const isCustom = exerciseDetails ? ExerciseService.isCustomExercise(exerciseDetails.id) : false;
+                    const match = matches[exercise.name];
+                    const exerciseDetails = typeof match === 'object' ? match : null;
+
+                    let subtitle = 'Loading…';
+                    if (match === 'error') subtitle = "Couldn't load. Collapse and reopen this day to retry.";
+                    else if (match === null) subtitle = 'Not found in the exercise database';
+                    else if (match) subtitle = `${match.level ?? 'N/A'} • ${match.equipment ?? 'None'}`;
                     
                     return (
                       <View 
@@ -108,9 +146,9 @@ export default function WorkoutDetail() {
                           activeOpacity={0.7}
                         >
                           {/* Image Section */}
-                          {exerciseDetails?.images?.[0] ? (
+                          {exerciseDetails?.image ? (
                             <Image 
-                              source={{ uri: getExerciseImage(exerciseDetails.images[0], isCustom) }}
+                              source={{ uri: exerciseDetails.image }}
                               className="w-16 h-16 rounded-lg mr-4"
                               resizeMode="cover"
                             />
@@ -126,7 +164,7 @@ export default function WorkoutDetail() {
                               {exerciseDetails ? exerciseDetails.name : exercise.name}
                             </Text>
                             <Text className="text-gray-400 text-sm mt-1">
-                              {exerciseDetails?.level || 'N/A'} • {exerciseDetails?.equipment || 'Bodyweight'}
+                              {subtitle}
                             </Text>
                           </View>
 
