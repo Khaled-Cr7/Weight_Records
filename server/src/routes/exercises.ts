@@ -71,7 +71,7 @@ router.get("/", async (req, res) => {
       prisma.exercise.count({ where }),
       prisma.exercise.findMany({
         where,
-        orderBy: { name: "asc" },
+        orderBy: [{ name: "asc" }, { id: "asc" }],
         take: limit,
         skip: offset,
         select: {

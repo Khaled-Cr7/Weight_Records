@@ -106,6 +106,26 @@ export default function Training() {
           </TouchableOpacity>
         </View>
 
+        {/* Exercise library */}
+        <TouchableOpacity
+          onPress={() => router.push('/exercises' as any)}
+          activeOpacity={0.8}
+          className="bg-[#142238] border border-[#263B55] rounded-2xl p-4 mt-4 flex-row items-center"
+        >
+          <View className="w-12 h-12 bg-[#263B55] rounded-xl items-center justify-center">
+            <Ionicons name="search-outline" size={22} color="#8CB5EC" />
+          </View>
+
+          <View className="flex-1 ml-4">
+            <Text className="text-[#F1F5FB] font-bold text-base">Exercise Library</Text>
+            <Text className="text-[#91A5C0] text-xs mt-1">
+              Browse and search every exercise
+            </Text>
+          </View>
+
+          <Ionicons name="chevron-forward" size={18} color="#7186A1" />
+        </TouchableOpacity>
+
         {/* Sample routines */}
         <View className="flex-row justify-between items-center mt-9 mb-4">
           <Text className="text-[#F1F5FB] text-xl font-bold">
