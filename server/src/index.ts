@@ -4,6 +4,11 @@ import cors from "cors";
 import "dotenv/config";
 import { prisma } from "./lib/prisma.js";
 import exercisesRouter from "./routes/exercises.js";
+import authRouter from "./routes/auth.js";
+import { checkAuthConfig } from "./lib/token.js";
+
+// Stop immediately if JWT_SECRET is missing
+checkAuthConfig();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -11,6 +16,8 @@ const PORT = Number(process.env.PORT) || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/auth", authRouter);
 
 app.use("/api/exercises", exercisesRouter);
 
