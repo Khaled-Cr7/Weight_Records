@@ -1,0 +1,994 @@
+[
+  {
+    "key": "broSplit",
+    "name": "Bro Split",
+    "description": "One muscle group per day",
+    "imageKey": "bench",
+    "routines": [
+      {
+        "name": "Chest & Triceps",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Bench_Press_-_Medium_Grip",
+            "name": "Barbell Bench Press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Incline_Dumbbell_Press",
+            "name": "Incline Dumbbell Press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "Butterfly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Pushdown",
+            "name": "Triceps Pushdown",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Overhead_Extension_with_Rope",
+            "name": "Triceps Overhead Extension with Rope",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Ab_Crunch_Machine",
+            "name": "ab Crunch machine",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Back & Biceps",
+        "exercises": [
+          {
+            "exerciseId": "Wide-Grip_Lat_Pulldown",
+            "name": "wide-grip Lat Pulldown",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lying_T-Bar_Row",
+            "name": "T-Bar Row",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Cable_Rows",
+            "name": "seated cable row",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Dumbbell_Curl",
+            "name": "seated dumbbell Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Preacher_Curl",
+            "name": "Preacher Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Hammer_Curls",
+            "name": "Hammer Curls",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower Back Extension",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Legs and Abs",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Squat",
+            "name": "Barbell Squat",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg Curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Romanian_Deadlift",
+            "name": "Romanian Deadlift",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing Calf Raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Adductor",
+            "name": "Thigh Adductor",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Crunch",
+            "name": "cable crunch",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Shoulders",
+        "exercises": [
+          {
+            "exerciseId": "Dumbbell_Shoulder_Press",
+            "name": "dumbbell Shoulder Press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Lateral_Raise",
+            "name": "One Arm Cable Lateral Raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Machine_Flyes",
+            "name": "Reverse machine fly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Rope_Rear-Delt_Rows",
+            "name": "rear-delt rows",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Side_Lateral_Raise",
+            "name": "side lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Shrugs",
+            "name": "cable shrug",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Arms",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Curl",
+            "name": "Barbell Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "EZ-Bar_Skullcrusher",
+            "name": "Ez-bar skullcrusher",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Curl",
+            "name": "One Arm Cable Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_One_Arm_Tricep_Extension",
+            "name": "Cable One Arm Tricep Extension",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Hammer_Curls",
+            "name": "Hammer Curls",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Barbell_Curl",
+            "name": "Reverse barbell Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Wrist_Curl",
+            "name": "cable wrist curl",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "pplSplit",
+    "name": "PPL Split",
+    "description": "Push, Pull, Legs",
+    "imageKey": "dumbell",
+    "routines": [
+      {
+        "name": "Push",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Bench_Press_-_Medium_Grip",
+            "name": "Barbell Bench Press",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Incline_Dumbbell_Press",
+            "name": "Incline Dumbbell Press",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "Butterfly",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Machine_Shoulder_Military_Press",
+            "name": "Machine Shoulder (military)",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Lateral_Raise",
+            "name": "One Arm Cable Lateral Raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Pushdown",
+            "name": "Triceps Pushdown",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Overhead_Extension_with_Rope",
+            "name": "Triceps overhead extension with rope",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Pull",
+        "exercises": [
+          {
+            "exerciseId": "V-Bar_Pulldown",
+            "name": "v-bar Pulldown",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lying_T-Bar_Row",
+            "name": "T-Bar Row",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Cable_Rows",
+            "name": "Seated Cable Row",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Machine_Flyes",
+            "name": "reverse machine flyes",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower back extension",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Shrugs",
+            "name": "cable shrugs",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Preacher_Curl",
+            "name": "Preacher Curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Hammer_Curls",
+            "name": "Hammer Curls",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Legs and Abs",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Squat",
+            "name": "Barbell Squat",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg Curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Adductor",
+            "name": "Thigh Adductor",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing Calf Raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Ab_Crunch_Machine",
+            "name": "ab Crunch Machine",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Push (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Smith_Machine_Incline_Bench_Press",
+            "name": "Smith Machine Incline bench Press",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Machine_Bench_Press",
+            "name": "machine bench press",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Crossover",
+            "name": "cable crossover",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Smith_Machine_Overhead_Shoulder_Press",
+            "name": "smith machine overhead shoulder press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Side_Lateral_Raise",
+            "name": "side lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "EZ-Bar_Skullcrusher",
+            "name": "EZ-bar skullcrusher",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_One_Arm_Tricep_Extension",
+            "name": "one arm tricep extension",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Pull (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Wide-Grip_Lat_Pulldown",
+            "name": "wide-grip Lat Pulldown",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lying_T-Bar_Row",
+            "name": "lying T-bar row",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leverage_Iso_Row",
+            "name": "iso row",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Rope_Rear-Delt_Rows",
+            "name": "Cable Rope Rear-Delt Rows",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower Back Extension",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Dumbbell_Shrug",
+            "name": "dumbbell shrug",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Dumbbell_Curl",
+            "name": "seated dumbbell curl",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Curl",
+            "name": "one arm Cable Curl",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Legs and Abs (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Romanian_Deadlift",
+            "name": "Romanian Deadlift",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Smith_Machine_Squat",
+            "name": "Smith Machine Squat",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg Curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Abductor",
+            "name": "Thigh Abductor",
+            "sets": 2,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing Calf Raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Crunch",
+            "name": "cable crunch",
+            "sets": 2,
+            "reps": "8-10"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "ulSplit",
+    "name": "Upper/Lower Split",
+    "description": "Upper Body, Lower Body",
+    "imageKey": "plates",
+    "routines": [
+      {
+        "name": "Upper Body",
+        "exercises": [
+          {
+            "exerciseId": "Smith_Machine_Incline_Bench_Press",
+            "name": "Smith Machine Incline bench Press",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Smith_Machine_Overhead_Shoulder_Press",
+            "name": "Smith machine overhead shoulder press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lying_T-Bar_Row",
+            "name": "lying T-bar row",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "butterfly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Wide-Grip_Lat_Pulldown",
+            "name": "Wide-Grip Lat Pulldown",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Lateral_Raise",
+            "name": "one arm cable lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Machine_Flyes",
+            "name": "reverse machine flyes",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Dumbbell_Shrug",
+            "name": "dumbbell shrug",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_One_Arm_Tricep_Extension",
+            "name": "one arm tricep",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Curl",
+            "name": "one arm cable curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Hammer_Curls",
+            "name": "hammer curls",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Lower Body",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Squat",
+            "name": "Barbell Squat",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg Curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Adductor",
+            "name": "Thigh Adductor",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing Calf Raises",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Ab_Crunch_Machine",
+            "name": "ab Crunch Machine",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower Back Extension",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Upper Body (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Bench_Press_-_Medium_Grip",
+            "name": "Barbell bench press",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Machine_Shoulder_Military_Press",
+            "name": "Machine shoulder (military)",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "V-Bar_Pulldown",
+            "name": "v-bar pulldown",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "butterfly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Cable_Rows",
+            "name": "seated cable row",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Side_Lateral_Raise",
+            "name": "side lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Rope_Rear-Delt_Rows",
+            "name": "cable rope rear-delt",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Shrugs",
+            "name": "cable shrug",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Overhead_Extension_with_Rope",
+            "name": "triceps overhead extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Preacher_Curl",
+            "name": "Preacher curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Barbell_Curl",
+            "name": "reverse barbell curl",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Lower Body (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Romanian_Deadlift",
+            "name": "Romanian Deadlift",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Smith_Machine_Squat",
+            "name": "Smith Machine Squat",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg Curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Abductor",
+            "name": "Thigh Abductor",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing Calf Raises",
+            "sets": 4,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Crunch",
+            "name": "cable crunch",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower Back Extension",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "fullSplit",
+    "name": "Full Body Split",
+    "description": "Full body workouts every session",
+    "imageKey": "incline",
+    "routines": [
+      {
+        "name": "Full Body (v1)",
+        "exercises": [
+          {
+            "exerciseId": "Barbell_Bench_Press_-_Medium_Grip",
+            "name": "Barbell Bench Press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "Butterfly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Side_Lateral_Raise",
+            "name": "side lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Wide-Grip_Lat_Pulldown",
+            "name": "wide-grip lat pulldown",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_One_Arm_Tricep_Extension",
+            "name": "cable one arm tricep extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Curl",
+            "name": "one arm cable curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Barbell_Squat",
+            "name": "barbell Squat",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing calf raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Ab_Crunch_Machine",
+            "name": "ab crunch machine",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Full Body (v2)",
+        "exercises": [
+          {
+            "exerciseId": "Lying_T-Bar_Row",
+            "name": "Lying T-bar row",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "V-Bar_Pulldown",
+            "name": "v-bar pulldown",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Smith_Machine_Incline_Bench_Press",
+            "name": "Smith machine incline bench press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Machine_Shoulder_Military_Press",
+            "name": "machine shoulder (military)",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Overhead_Extension_with_Rope",
+            "name": "triceps overhead extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Preacher_Curl",
+            "name": "Preacher curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Romanian_Deadlift",
+            "name": "Romanian deadlift",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing calf raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Lower_Back_Extension",
+            "name": "Lower Back Extension",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      },
+      {
+        "name": "Full Body (v3)",
+        "exercises": [
+          {
+            "exerciseId": "Smith_Machine_Overhead_Shoulder_Press",
+            "name": "Smith machine overhead shoulder press",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Butterfly",
+            "name": "Butterfly",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "One_Arm_Cable_Lateral_Raise",
+            "name": "one arm cable lateral raise",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Cable_Rows",
+            "name": "Seated cable row",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Reverse_Machine_Flyes",
+            "name": "reverse machine flyes",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Triceps_Pushdown",
+            "name": "Triceps pushdown",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Hammer_Curls",
+            "name": "Hammer curls",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Cable_Shrugs",
+            "name": "Cable shrugs",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Leg_Extensions",
+            "name": "Leg extension",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Seated_Leg_Curl",
+            "name": "Seated Leg curl",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Standing_Calf_Raises",
+            "name": "Standing calf raises",
+            "sets": 3,
+            "reps": "8-10"
+          },
+          {
+            "exerciseId": "Thigh_Adductor",
+            "name": "thigh Adductor",
+            "sets": 3,
+            "reps": "8-10"
+          }
+        ]
+      }
+    ]
+  }
+]

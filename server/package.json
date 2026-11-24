@@ -10,7 +10,8 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "seed:exercises": "tsx src/scripts/seedExercises.ts",
-    "seed:dev-user": "tsx src/scripts/seedDevUser.ts"
+    "seed:dev-user": "tsx src/scripts/seedDevUser.ts",
+    "seed:programs": "tsx src/scripts/seedPrograms.ts"
   },
   "keywords": [],
   "author": "",
