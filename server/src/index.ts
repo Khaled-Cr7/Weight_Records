@@ -5,6 +5,8 @@ import "dotenv/config";
 import { prisma } from "./lib/prisma.js";
 import exercisesRouter from "./routes/exercises.js";
 import authRouter from "./routes/auth.js";
+import programsRouter from "./routes/programs.js";
+import routinesRouter from "./routes/routines.js";
 import { checkAuthConfig } from "./lib/token.js";
 
 // Stop immediately if JWT_SECRET is missing
@@ -18,6 +20,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
+
+app.use("/api/programs", programsRouter);
+app.use("/api/routines", routinesRouter);
 
 app.use("/api/exercises", exercisesRouter);
 
