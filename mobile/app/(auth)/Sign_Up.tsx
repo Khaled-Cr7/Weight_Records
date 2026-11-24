@@ -1,38 +1,64 @@
-
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useAuth } from '@/store/auth';
+
+// Same rules as the server (server/src/routes/auth.ts)
+function validate(form: { username: string; email: string; password: string }): string {
+  if (!/^[A-Za-z0-9_]{3,30}$/.test(form.username.trim())) {
+    return 'Username must be 3-30 characters: letters, numbers or _';
+  }
+  if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) {
+    return 'Enter a valid email address';
+  }
+  if (form.password.length < 8) {
+    return 'Password must be at least 8 characters';
+  }
+  return '';
+}
 
 const Sign_Up = () => {
+  const signUp = useAuth((state) => state.signUp);
+
   const [form, setForm] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = () => {
-    Alert.alert(
-      'Coming Soon',
-      'Account registration will be available when authentication is connected.'
-    );
+  const handleSignUp = async () => {
+    const problem = validate(form);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await signUp(form.email.trim(), form.username.trim(), form.password);
+      router.replace('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <View className="flex-1 pb-10">
       <View className="gap-5">
         <CustomInput
-          label="Full name"
-          placeholder="Enter your full name"
-          value={form.name}
+          label="Username"
+          placeholder="Choose a username"
+          value={form.username}
           onChangeText={(text) =>
-            setForm((prev) => ({ ...prev, name: text }))
+            setForm((prev) => ({ ...prev, username: text }))
           }
         />
 
@@ -61,10 +87,15 @@ const Sign_Up = () => {
         </Text>
       </View>
 
+      {error !== '' && (
+        <Text className="text-[#F2A0A0] text-sm mt-4">{error}</Text>
+      )}
+
       <View className="mt-8">
         <CustomButton
           title="Create Account"
           onPress={handleSignUp}
+          isLoading={isLoading}
         />
       </View>
 

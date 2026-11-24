@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { images } from '@/constants/images';
-import { session } from '@/constants/session';
+import { useAuth } from '@/store/auth';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -74,10 +74,7 @@ export default function Home() {
     });
   };
 
-  const signOut = () => {
-    session.isGuest = false;
-    router.replace('/(auth)/Sign_In');
-  };
+  const signOut = useAuth((state) => state.signOut);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B1422]">
@@ -336,7 +333,7 @@ export default function Home() {
           ))}
         </View>
 
-        {/* Guest sign out */}
+        {/* Sign out */}
         <TouchableOpacity
           onPress={signOut}
           className="flex-row items-center justify-center gap-2 mt-5 py-4"

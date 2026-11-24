@@ -9,11 +9,18 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Slot, usePathname } from 'expo-router';
+import { Redirect, Slot, usePathname } from 'expo-router';
+import { useAuth } from '@/store/auth';
 
 export default function AuthLayout() {
   const pathname = usePathname();
   const isSignIn = pathname.includes('Sign_In');
+  const status = useAuth((state) => state.status);
+
+  // Already signed in: skip the sign-in screens
+  if (status === 'signedIn') {
+    return <Redirect href="/" />;
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B1422]">

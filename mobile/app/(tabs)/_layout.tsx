@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { session } from '@/constants/session';
+import { useAuth } from '@/store/auth';
 
 type TabIconName = React.ComponentProps<
   typeof Ionicons
@@ -37,7 +37,11 @@ const TabIcon = ({ focused, name, label }: TabIconProps) => {
 };
 
 export default function TabLayout() {
-  if (!session.isGuest) {
+  const status = useAuth((state) => state.status);
+
+  if (status === 'loading') return null; // still checking the saved login
+
+  if (status !== 'signedIn') {
     return <Redirect href="/(auth)/Sign_In" />;
   }
 

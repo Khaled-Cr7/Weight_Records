@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import LoadingScreen from "./loading"
 import React from "react";
 import { LoadingProvider } from '@/context/LoadingContext';
+import { useAuth } from '@/store/auth';
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -15,8 +16,11 @@ export default function RootLayout() {
     async function prepare() {
       try {
         await SplashScreen.hideAsync();
-        // Keeps the loading screen visible for a moment
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Check for a saved login while the loading screen is visible (at least 1 second)
+        await Promise.all([
+          useAuth.getState().restore(),
+          new Promise((resolve) => setTimeout(resolve, 1000)),
+        ]);
       } catch (error) {
         console.warn(error);
       } finally {
