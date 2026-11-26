@@ -13,11 +13,22 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { repsText, weightText } from '@/lib/routineFormat';
+import { SET_STYLE } from '@/lib/setStyle';
 import { ExerciseService } from '@/services/exerciseService';
 import type { Exercise } from '@/services/types/exercise';
+import type { RoutineSet } from '@/services/types/program';
 
 export default function ExerciseDetail() {
-  const { id, sets, reps } = useLocalSearchParams<{ id: string; sets?: string; reps?: string }>();
+  const { id, setsJson } = useLocalSearchParams<{ id: string; setsJson?: string }>();
+
+  // The sets of this exercise in the routine it was opened from (if any)
+  let routineSets: RoutineSet[] = [];
+  try {
+    routineSets = setsJson ? JSON.parse(setsJson) : [];
+  } catch {
+    routineSets = [];
+  }
   const { width } = useWindowDimensions();
   const imageWidth = width - 40; // screen minus the 20px side padding
 
@@ -152,21 +163,41 @@ export default function ExerciseDetail() {
           </View>
         )}
 
-        {/* From the routine (only when opened from one) */}
-        {sets && reps && (
-          <View className="bg-[#192C46] border border-[#344C66] rounded-2xl p-4 mt-5">
-            <Text className="text-[#8CB5EC] text-xs font-bold tracking-widest">IN THIS ROUTINE</Text>
-            <View className="flex-row mt-3">
-              <View className="flex-1 items-center">
-                <Text className="text-[#91A5C0] text-xs mb-1">SETS</Text>
-                <Text className="text-[#F1F5FB] text-2xl font-bold">{sets}</Text>
-              </View>
-              <View className="w-[1px] bg-[#344C66]" />
-              <View className="flex-1 items-center">
-                <Text className="text-[#91A5C0] text-xs mb-1">REPS</Text>
-                <Text className="text-[#F1F5FB] text-2xl font-bold">{reps}</Text>
-              </View>
-            </View>
+        {/* From the routine (only when opened from one): one row per set */}
+        {routineSets.length > 0 && (
+          <View className="bg-[#142238] border border-[#263B55] rounded-3xl p-4 mt-5">
+            <Text className="text-[#8CB5EC] text-xs font-bold tracking-widest mb-3">IN THIS ROUTINE</Text>
+
+            {routineSets.map((set, index) => {
+              const style = SET_STYLE[set.setType];
+              const number = routineSets.slice(0, index + 1).filter((item) => item.setType === 'NORMAL').length;
+
+              return (
+                <View
+                  key={set.id}
+                  className="flex-row items-center rounded-2xl px-3 py-3 mb-2"
+                  style={{ backgroundColor: style.bg, borderWidth: 1, borderColor: style.border }}
+                >
+                  <View
+                    className="w-9 h-9 rounded-full items-center justify-center"
+                    style={{ backgroundColor: style.border }}
+                  >
+                    <Text style={{ color: style.text }} className="font-bold">
+                      {set.setType === 'NORMAL' ? number : set.setType === 'WARMUP' ? 'W' : 'D'}
+                    </Text>
+                  </View>
+
+                  <View className="flex-1 ml-3">
+                    <Text style={{ color: style.text }} className="text-xs font-semibold">
+                      {style.label}
+                    </Text>
+                    <Text className="text-[#F1F5FB] text-lg font-bold mt-0.5">{`${repsText(set)} reps`}</Text>
+                  </View>
+
+                  <Text className="text-[#DCE6F4] font-semibold">{weightText(set)}</Text>
+                </View>
+              );
+            })}
           </View>
         )}
 

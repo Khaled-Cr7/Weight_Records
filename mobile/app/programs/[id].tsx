@@ -1,15 +1,18 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { NameModal } from '@/components/NameModal';
+import { ProgramArt } from '@/components/ProgramArt';
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { countSets, plural, programImage, topMuscles } from '@/lib/routineFormat';
+import { countSets, plural, topMuscles } from '@/lib/routineFormat';
 import { ProgramService } from '@/services/programService';
 import type { ProgramDetail } from '@/services/types/program';
 
 const MAX_THUMBS = 4;
+const ACCENTS = ['#719AD1', '#8CB5EC', '#5E86BD', '#A3C4F0']; // one per routine card, repeating
 
 export default function ProgramScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -155,34 +158,53 @@ export default function ProgramScreen() {
         contentContainerClassName="px-5 pt-5 pb-16"
         showsVerticalScrollIndicator={false}
       >
-        {/* Program card */}
-        <View className="bg-[#192C46] border border-[#344C66] rounded-3xl p-5">
-          <View className="flex-row items-center">
-            <View className="flex-1 pr-3">
-              <Text className="text-[#8CB5EC] text-xs font-bold tracking-widest">
-                {program.isReadyMade ? 'READY-MADE PROGRAM' : 'MY PROGRAM'}
-              </Text>
-              <Text className="text-[#F1F5FB] text-3xl font-bold mt-3">{program.name}</Text>
-              {program.description ? (
-                <Text className="text-[#91A5C0] text-sm mt-2 leading-5">{program.description}</Text>
-              ) : null}
-            </View>
+        {/* Hero */}
+        <View className="rounded-3xl overflow-hidden border border-[#344C66]" style={{ minHeight: 190 }}>
+          <LinearGradient
+            colors={['#142238', '#192C46', '#2A4A78']}
+            locations={[0, 0.5, 1]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={StyleSheet.absoluteFill}
+          />
 
-            <Image
-              source={programImage(program.imageKey)}
-              className="w-24 h-24"
-              resizeMode="contain"
-            />
+          {/* Glow and the icon, running off the right edge */}
+          <View
+            style={{
+              position: 'absolute',
+              right: -50,
+              top: 10,
+              width: 210,
+              height: 210,
+              borderRadius: 105,
+              backgroundColor: '#719AD126',
+            }}
+          />
+          <ProgramArt
+            imageKey={program.imageKey}
+            size={170}
+            style={{ position: 'absolute', right: -24, top: 20, transform: [{ rotate: '-12deg' }] }}
+          />
+
+          <View className="p-5" style={{ width: '66%' }}>
+            <Text className="text-[#8CB5EC] text-xs font-bold tracking-widest">
+              {program.isReadyMade ? 'READY-MADE PROGRAM' : 'MY PROGRAM'}
+            </Text>
+            <Text className="text-[#F1F5FB] text-3xl font-bold mt-2">{program.name}</Text>
+            {program.description ? (
+              <Text className="text-[#91A5C0] text-sm mt-2 leading-5">{program.description}</Text>
+            ) : null}
           </View>
 
-          <View className="flex-row gap-2 mt-5">
+          <View className="flex-row px-5 pb-5 pt-1">
             {[
-              plural(program.routines.length, 'routine'),
-              plural(exerciseTotal, 'exercise'),
-              plural(setTotal, 'set'),
-            ].map((label) => (
-              <View key={label} className="bg-[#142238] border border-[#263B55] rounded-full px-3 py-1.5">
-                <Text className="text-[#DCE6F4] text-xs font-semibold">{label}</Text>
+              { value: program.routines.length, label: 'ROUTINES' },
+              { value: exerciseTotal, label: 'EXERCISES' },
+              { value: setTotal, label: 'SETS' },
+            ].map((stat) => (
+              <View key={stat.label} className="mr-6">
+                <Text className="text-[#F1F5FB] text-2xl font-bold">{stat.value}</Text>
+                <Text className="text-[#8CB5EC] text-[10px] font-bold tracking-widest mt-0.5">{stat.label}</Text>
               </View>
             ))}
           </View>
@@ -207,7 +229,7 @@ export default function ProgramScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Own programs can be renamed and deleted */}
+        {/* Own programs can be edited and deleted */}
         {isOwner && (
           <View className="flex-row gap-3 mt-4">
             <TouchableOpacity
@@ -237,9 +259,7 @@ export default function ProgramScreen() {
         <View className="mt-8 mb-4 flex-row items-end justify-between">
           <View className="flex-1 pr-3">
             <Text className="text-[#F1F5FB] text-xl font-bold">Routines</Text>
-            <Text className="text-[#91A5C0] text-sm mt-1">
-              Start any routine on any day, in any order.
-            </Text>
+            <Text className="text-[#91A5C0] text-sm mt-1">Start any routine on any day, in any order.</Text>
           </View>
 
           {isOwner && program.routines.length > 1 && (
@@ -256,6 +276,7 @@ export default function ProgramScreen() {
         )}
 
         {program.routines.map((routine, index) => {
+          const accent = ACCENTS[index % ACCENTS.length];
           const thumbs = routine.exercises.slice(0, MAX_THUMBS);
           const extra = routine.exercises.length - thumbs.length;
           const muscles = topMuscles(routine);
@@ -266,74 +287,98 @@ export default function ProgramScreen() {
               onPress={() => {
                 if (!reordering) router.push({ pathname: '/routines/[id]', params: { id: routine.id } } as any);
               }}
-              activeOpacity={reordering ? 1 : 0.8}
-              className="bg-[#142238] border border-[#263B55] rounded-2xl p-4 mb-3"
+              activeOpacity={reordering ? 1 : 0.85}
+              className="rounded-3xl overflow-hidden border border-[#263B55] mb-3"
             >
-              <View className="flex-row items-center">
-                <View className="w-9 h-9 rounded-full bg-[#263B55] items-center justify-center">
-                  <Text className="text-[#8CB5EC] font-bold">{index + 1}</Text>
-                </View>
+              <LinearGradient
+                colors={['#142238', '#142238', `${accent}40`]}
+                locations={[0, 0.5, 1]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={StyleSheet.absoluteFill}
+              />
 
-                <View className="flex-1 ml-3">
-                  <Text className="text-[#F1F5FB] font-bold text-lg" numberOfLines={1}>
+              {/* Big faint number */}
+              <Text
+                style={{
+                  position: 'absolute',
+                  right: 16,
+                  top: 4,
+                  fontSize: 72,
+                  lineHeight: 80,
+                  fontWeight: '800',
+                  color: `${accent}30`,
+                }}
+              >
+                {String(index + 1).padStart(2, '0')}
+              </Text>
+
+              <View className="p-4">
+                <View style={{ paddingRight: 70 }}>
+                  <Text className="text-[#F1F5FB] font-bold text-xl" numberOfLines={2}>
                     {routine.name}
                   </Text>
-                  <Text className="text-[#91A5C0] text-xs mt-0.5">
+                  <Text className="text-[#91A5C0] text-xs mt-1">
                     {plural(routine.exercises.length, 'exercise')} · {plural(countSets(routine), 'set')}
                   </Text>
                 </View>
 
-                {reordering ? (
-                  <View className="flex-row">
-                    <TouchableOpacity onPress={() => moveRoutine(index, -1)} hitSlop={8} className="p-2">
-                      <Ionicons name="arrow-up-circle" size={26} color={index === 0 ? '#344C66' : '#8CB5EC'} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => moveRoutine(index, 1)} hitSlop={8} className="p-2">
-                      <Ionicons
-                        name="arrow-down-circle"
-                        size={26}
-                        color={index === program.routines.length - 1 ? '#344C66' : '#8CB5EC'}
-                      />
-                    </TouchableOpacity>
+                {muscles.length > 0 && (
+                  <View className="flex-row flex-wrap gap-2 mt-3">
+                    {muscles.map((muscle) => (
+                      <View key={muscle} className="rounded-full px-3 py-1" style={{ backgroundColor: `${accent}33` }}>
+                        <Text className="text-[#DCE6F4] text-xs capitalize">{`${muscle}\u00A0`}</Text>
+                      </View>
+                    ))}
                   </View>
-                ) : (
-                  <Ionicons name="chevron-forward" size={18} color="#7186A1" />
                 )}
-              </View>
 
-              {muscles.length > 0 && (
-                <View className="flex-row flex-wrap gap-2 mt-3">
-                  {muscles.map((muscle) => (
-                    <View key={muscle} className="bg-[#263B55] rounded-full px-3 py-1">
-                      <Text className="text-[#DCE6F4] text-xs capitalize">{`${muscle}\u00A0`}</Text>
+                <View className="flex-row items-center justify-between mt-4">
+                  {/* Overlapping exercise pictures */}
+                  <View className="flex-row items-center pl-3">
+                    {thumbs.map((item) =>
+                      item.exercise.image ? (
+                        <Image
+                          key={item.id}
+                          source={{ uri: item.exercise.image }}
+                          className="w-11 h-11 rounded-full bg-[#263B55] border-2 border-[#142238] -ml-3"
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View
+                          key={item.id}
+                          className="w-11 h-11 rounded-full bg-[#263B55] border-2 border-[#142238] -ml-3 items-center justify-center"
+                        >
+                          <Ionicons name="barbell-outline" size={16} color="#8CB5EC" />
+                        </View>
+                      )
+                    )}
+                    {extra > 0 && (
+                      <View className="w-11 h-11 rounded-full bg-[#263B55] border-2 border-[#142238] -ml-3 items-center justify-center">
+                        <Text className="text-[#DCE6F4] text-xs font-bold">{`+${extra}`}</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {reordering ? (
+                    <View className="flex-row">
+                      <TouchableOpacity onPress={() => moveRoutine(index, -1)} hitSlop={8} className="p-1.5">
+                        <Ionicons name="arrow-up-circle" size={30} color={index === 0 ? '#344C66' : '#8CB5EC'} />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => moveRoutine(index, 1)} hitSlop={8} className="p-1.5">
+                        <Ionicons
+                          name="arrow-down-circle"
+                          size={30}
+                          color={index === program.routines.length - 1 ? '#344C66' : '#8CB5EC'}
+                        />
+                      </TouchableOpacity>
                     </View>
-                  ))}
-                </View>
-              )}
-
-              <View className="flex-row mt-3">
-                {thumbs.map((item) =>
-                  item.exercise.image ? (
-                    <Image
-                      key={item.id}
-                      source={{ uri: item.exercise.image }}
-                      className="w-11 h-11 rounded-lg bg-[#263B55] mr-2"
-                      resizeMode="cover"
-                    />
                   ) : (
-                    <View
-                      key={item.id}
-                      className="w-11 h-11 rounded-lg bg-[#263B55] mr-2 items-center justify-center"
-                    >
-                      <Ionicons name="barbell-outline" size={16} color="#8CB5EC" />
+                    <View className="w-10 h-10 rounded-full items-center justify-center" style={{ backgroundColor: `${accent}33` }}>
+                      <Ionicons name="arrow-forward" size={18} color="#DCE6F4" />
                     </View>
-                  )
-                )}
-                {extra > 0 && (
-                  <View className="w-11 h-11 rounded-lg bg-[#263B55] items-center justify-center">
-                    <Text className="text-[#91A5C0] text-xs font-semibold">{`+${extra}`}</Text>
-                  </View>
-                )}
+                  )}
+                </View>
               </View>
             </TouchableOpacity>
           );
@@ -360,9 +405,11 @@ export default function ProgramScreen() {
         submitLabel="Save"
         initialName={program.name}
         initialDescription={program.description ?? ''}
+        initialIcon={program.imageKey}
+        withIcon
         onClose={() => setEditing(false)}
-        onSubmit={async (name, description) => {
-          const updated = await ProgramService.update(program.id, { name, description });
+        onSubmit={async (name, description, icon) => {
+          const updated = await ProgramService.update(program.id, { name, description, imageKey: icon });
           setProgram(updated);
           setEditing(false);
         }}

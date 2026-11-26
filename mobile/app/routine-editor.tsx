@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { SET_STYLE } from '@/lib/setStyle';
 import { RoutineService } from '@/services/programService';
 import type { ExerciseListItem } from '@/services/types/exercise';
 import type { RepMode, Routine, RoutineExerciseInput, RoutineInput, SetType } from '@/services/types/program';
@@ -35,6 +36,11 @@ type DraftExercise = {
   image: string | null;
   detail: string;
   rest: string;
+  // the "fill all sets" row
+  bulkWeight: string;
+  bulkReps: string;
+  bulkMin: string;
+  bulkMax: string;
   sets: DraftSet[];
 };
 
@@ -59,6 +65,10 @@ function fromPicked(item: ExerciseListItem): DraftExercise {
     image: item.image,
     detail: [item.primaryMuscles[0], item.equipment ?? 'no equipment'].filter(Boolean).join(' • '),
     rest: '90',
+    bulkWeight: '',
+    bulkReps: '',
+    bulkMin: '',
+    bulkMax: '',
     sets: [emptySet(), emptySet(), emptySet()],
   };
 }
@@ -71,6 +81,10 @@ function fromRoutine(routine: Routine): DraftExercise[] {
     image: item.exercise.image,
     detail: [item.exercise.primaryMuscles[0], item.exercise.equipment ?? 'no equipment'].filter(Boolean).join(' • '),
     rest: String(item.restSeconds ?? 90),
+    bulkWeight: '',
+    bulkReps: '',
+    bulkMin: '',
+    bulkMax: '',
     sets: item.sets.map((set) => ({
       key: nextKey(),
       setType: set.setType,
@@ -118,9 +132,9 @@ function buildBody(name: string, exercises: DraftExercise[]): { error: string } 
         sets.push({ setType: set.setType, repMode: 'RANGE', targetWeightKg, targetRepsMin: min, targetRepsMax: max });
       } else {
         const repsText = set.reps.trim();
-        if (repsText !== '' && !/^\d+$/.test(repsText)) return { error: `Check the reps in ${where}` };
-        const targetReps = repsText === '' ? null : Number(repsText);
-        if (targetReps !== null && (targetReps < 1 || targetReps > 999)) {
+        if (!/^\d+$/.test(repsText)) return { error: `Enter the reps in ${where}` };
+        const targetReps = Number(repsText);
+        if (targetReps < 1 || targetReps > 999) {
           return { error: `Reps must be between 1 and 999 in ${where}` };
         }
         sets.push({ setType: set.setType, repMode: 'REPS', targetWeightKg, targetReps });
@@ -139,21 +153,29 @@ function NumberInput(props: {
   onChangeText: (text: string) => void;
   placeholder: string;
   decimal?: boolean;
-  className?: string;
+  maxLength?: number;
+  style?: object;
 }) {
   return (
     <TextInput
       value={props.value}
       onChangeText={props.onChangeText}
       placeholder={props.placeholder}
-      placeholderTextColor="#7186A1"
+      placeholderTextColor="#506680"
       keyboardType={props.decimal ? 'decimal-pad' : 'number-pad'}
-      maxLength={7}
+      maxLength={props.maxLength ?? 3}
       selectTextOnFocus
-      className={`h-10 bg-[#0B1422] border border-[#263B55] rounded-lg text-center text-[#F1F5FB] ${props.className ?? ''}`}
+      className="h-11 bg-[#0B1422] border border-[#263B55] rounded-xl text-[#F1F5FB] font-semibold"
+      style={[{ padding: 0, paddingHorizontal: 2, textAlign: 'center', fontSize: 16 }, props.style]}
     />
   );
 }
+
+// Column widths shared by every row of sets, so the columns line up
+const BADGE_W = 40;
+const RIGHT_W = 52;
+const WEIGHT_FLEX = 1;
+const REPS_FLEX = 1.6;
 
 const SET_TYPE_ORDER: SetType[] = ['NORMAL', 'WARMUP', 'DROP'];
 
@@ -218,11 +240,11 @@ export default function RoutineEditor() {
       return next;
     });
 
-  // A new set starts as a copy of the last one
+  // A new set starts as a copy of the last one (always as a working set)
   const addSet = (key: string) =>
     changeExercise(key, (exercise) => {
       const last = exercise.sets[exercise.sets.length - 1];
-      return { ...exercise, sets: [...exercise.sets, last ? { ...last, key: nextKey() } : emptySet()] };
+      return { ...exercise, sets: [...exercise.sets, last ? { ...last, key: nextKey(), setType: 'NORMAL' as SetType } : emptySet()] };
     });
 
   const removeSet = (exerciseKey: string, setKey: string) =>
@@ -236,6 +258,24 @@ export default function RoutineEditor() {
       ...exercise,
       sets: exercise.sets.map((set) => ({ ...set, repMode })),
     }));
+
+  // Copies the "fill all sets" values into every set of the exercise
+  const applyToAll = (key: string) =>
+    changeExercise(key, (exercise) => {
+      const range = exercise.sets.length > 0 && exercise.sets.every((set) => set.repMode === 'RANGE');
+      const repMode: RepMode = range ? 'RANGE' : 'REPS';
+      return {
+        ...exercise,
+        sets: exercise.sets.map((set) => ({
+          ...set,
+          repMode,
+          weight: exercise.bulkWeight.trim() !== '' ? exercise.bulkWeight : set.weight,
+          reps: !range && exercise.bulkReps.trim() !== '' ? exercise.bulkReps : set.reps,
+          min: range && exercise.bulkMin.trim() !== '' ? exercise.bulkMin : set.min,
+          max: range && exercise.bulkMax.trim() !== '' ? exercise.bulkMax : set.max,
+        })),
+      };
+    });
 
   const openPicker = () => router.push({ pathname: '/exercises', params: { pick: '1' } } as any);
 
@@ -323,6 +363,28 @@ export default function RoutineEditor() {
           className="h-14 bg-[#142238] border border-[#263B55] rounded-2xl px-4 text-[#F1F5FB] text-lg font-bold"
         />
 
+        {/* What the set badges mean */}
+        <View className="flex-row items-center flex-wrap gap-2 mt-3">
+          {([['NORMAL', '1', 'Working'], ['WARMUP', 'W', 'Warm-up'], ['DROP', 'D', 'Drop']] as const).map(
+            ([type, badge, label]) => (
+              <View
+                key={type}
+                className="flex-row items-center rounded-full pl-1 pr-3 py-1"
+                style={{ backgroundColor: SET_STYLE[type].bg, borderWidth: 1, borderColor: SET_STYLE[type].border }}
+              >
+                <View
+                  className="w-5 h-5 rounded-full items-center justify-center mr-1.5"
+                  style={{ backgroundColor: SET_STYLE[type].border }}
+                >
+                  <Text style={{ color: SET_STYLE[type].text }} className="text-[10px] font-bold">{badge}</Text>
+                </View>
+                <Text style={{ color: SET_STYLE[type].text }} className="text-xs font-semibold">{label}</Text>
+              </View>
+            )
+          )}
+        </View>
+        <Text className="text-[#7186A1] text-xs mt-2">Tap a set badge to change its type.</Text>
+
         {error && <Text className="text-[#F2A0A0] text-sm mt-3">{error}</Text>}
 
         {/* Exercises */}
@@ -337,7 +399,7 @@ export default function RoutineEditor() {
           const allRange = exercise.sets.length > 0 && exercise.sets.every((set) => set.repMode === 'RANGE');
 
           return (
-            <View key={exercise.key} className="bg-[#142238] border border-[#263B55] rounded-2xl p-4 mt-5">
+            <View key={exercise.key} className="bg-[#142238] border border-[#263B55] rounded-3xl p-3 mt-5">
               {/* Exercise header */}
               <View className="flex-row items-center">
                 {exercise.image ? (
@@ -370,16 +432,16 @@ export default function RoutineEditor() {
 
               {/* Reps / Range for the whole exercise, and rest time */}
               <View className="flex-row items-center justify-between mt-4">
-                <View className="flex-row bg-[#0B1422] border border-[#263B55] rounded-lg p-0.5">
+                <View className="flex-row bg-[#0B1422] border border-[#263B55] rounded-xl p-0.5">
                   <TouchableOpacity
                     onPress={() => setModeForAll(exercise.key, 'REPS')}
-                    className={`px-4 h-8 rounded-md items-center justify-center ${allReps ? 'bg-[#719AD1]' : ''}`}
+                    className={`px-4 h-9 rounded-lg items-center justify-center ${allReps ? 'bg-[#719AD1]' : ''}`}
                   >
                     <Text className={`text-xs font-semibold ${allReps ? 'text-[#0B1422]' : 'text-[#91A5C0]'}`}>Reps</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => setModeForAll(exercise.key, 'RANGE')}
-                    className={`px-4 h-8 rounded-md items-center justify-center ${allRange ? 'bg-[#719AD1]' : ''}`}
+                    className={`px-4 h-9 rounded-lg items-center justify-center ${allRange ? 'bg-[#719AD1]' : ''}`}
                   >
                     <Text className={`text-xs font-semibold ${allRange ? 'text-[#0B1422]' : 'text-[#91A5C0]'}`}>Range</Text>
                   </TouchableOpacity>
@@ -391,99 +453,157 @@ export default function RoutineEditor() {
                     value={exercise.rest}
                     onChangeText={(text) => changeExercise(exercise.key, (current) => ({ ...current, rest: text }))}
                     placeholder="90"
-                    className="w-16"
+                    maxLength={4}
+                    style={{ width: 64 }}
                   />
                   <Text className="text-[#91A5C0] text-xs ml-2">sec</Text>
                 </View>
               </View>
 
               {/* Column titles */}
-              <View className="flex-row items-center mt-4 mb-2">
-                <Text className="w-9 text-center text-[#7186A1] text-[10px] font-bold">SET</Text>
-                <Text className="w-[72px] mx-2 text-center text-[#7186A1] text-[10px] font-bold">KG</Text>
-                <Text className="flex-1 text-center text-[#7186A1] text-[10px] font-bold">REPS</Text>
-                <View className="w-[68px]" />
+              <View className="flex-row items-center mt-5 mb-2 gap-2">
+                <Text style={{ width: BADGE_W }} className="text-center text-[#7186A1] text-[10px] font-bold">SET</Text>
+                <Text style={{ flex: WEIGHT_FLEX }} className="text-center text-[#7186A1] text-[10px] font-bold">KG</Text>
+                <Text style={{ flex: REPS_FLEX }} className="text-center text-[#7186A1] text-[10px] font-bold">
+                  {allRange ? 'REPS (MIN - MAX)' : 'REPS'}
+                </Text>
+                <View style={{ width: RIGHT_W }} />
+              </View>
+
+              {/* Fill all sets at once */}
+              <View className="flex-row items-center gap-2 mb-3 pb-3 border-b border-dashed border-[#344C66]">
+                <View
+                  style={{ width: BADGE_W }}
+                  className="h-11 rounded-xl border border-dashed border-[#719AD1] items-center justify-center"
+                >
+                  <Text className="text-[#8CB5EC] text-[10px] font-bold">ALL</Text>
+                </View>
+
+                <View style={{ flex: WEIGHT_FLEX }}>
+                  <NumberInput
+                    value={exercise.bulkWeight}
+                    onChangeText={(text) => changeExercise(exercise.key, (current) => ({ ...current, bulkWeight: text }))}
+                    placeholder="kg"
+                    decimal
+                    maxLength={6}
+                  />
+                </View>
+
+                {allRange ? (
+                  <View style={{ flex: REPS_FLEX }} className="flex-row items-center">
+                    <View className="flex-1">
+                      <NumberInput
+                        value={exercise.bulkMin}
+                        onChangeText={(text) => changeExercise(exercise.key, (current) => ({ ...current, bulkMin: text }))}
+                        placeholder="min"
+                      />
+                    </View>
+                    <Text className="text-[#91A5C0] mx-1">-</Text>
+                    <View className="flex-1">
+                      <NumberInput
+                        value={exercise.bulkMax}
+                        onChangeText={(text) => changeExercise(exercise.key, (current) => ({ ...current, bulkMax: text }))}
+                        placeholder="max"
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <View style={{ flex: REPS_FLEX }}>
+                    <NumberInput
+                      value={exercise.bulkReps}
+                      onChangeText={(text) => changeExercise(exercise.key, (current) => ({ ...current, bulkReps: text }))}
+                      placeholder="reps"
+                    />
+                  </View>
+                )}
+
+                <TouchableOpacity
+                  onPress={() => applyToAll(exercise.key)}
+                  activeOpacity={0.85}
+                  style={{ width: RIGHT_W }}
+                  className="h-11 rounded-xl bg-[#719AD1] items-center justify-center"
+                >
+                  <Text className="text-[#0B1422] text-xs font-bold">Apply</Text>
+                </TouchableOpacity>
               </View>
 
               {/* Sets */}
-              {exercise.sets.map((set, setIndex) => (
-                <View key={set.key} className="flex-row items-center mb-2">
-                  {/* Tap to switch between normal, warm-up and drop set */}
-                  <TouchableOpacity
-                    onPress={() =>
-                      changeSet(exercise.key, set.key, {
-                        setType: SET_TYPE_ORDER[(SET_TYPE_ORDER.indexOf(set.setType) + 1) % SET_TYPE_ORDER.length],
-                      })
-                    }
-                    className="w-9 h-10 rounded-lg bg-[#263B55] items-center justify-center"
-                  >
-                    <Text className={`font-bold ${set.setType === 'NORMAL' ? 'text-[#8CB5EC]' : 'text-[#F1F5FB]'}`}>
-                      {set.setType === 'NORMAL'
-                        ? exercise.sets.slice(0, setIndex + 1).filter((item) => item.setType === 'NORMAL').length
-                        : set.setType === 'WARMUP'
-                          ? 'W'
-                          : 'D'}
-                    </Text>
-                  </TouchableOpacity>
+              {exercise.sets.map((set, setIndex) => {
+                const style = SET_STYLE[set.setType];
+                const number = exercise.sets.slice(0, setIndex + 1).filter((item) => item.setType === 'NORMAL').length;
 
-                  <NumberInput
-                    value={set.weight}
-                    onChangeText={(text) => changeSet(exercise.key, set.key, { weight: text })}
-                    placeholder="-"
-                    decimal
-                    className="w-[72px] mx-2"
-                  />
+                return (
+                  <View key={set.key} className="flex-row items-center gap-2 mb-2">
+                    {/* Tap to switch between working, warm-up and drop set */}
+                    <TouchableOpacity
+                      onPress={() =>
+                        changeSet(exercise.key, set.key, {
+                          setType: SET_TYPE_ORDER[(SET_TYPE_ORDER.indexOf(set.setType) + 1) % SET_TYPE_ORDER.length],
+                        })
+                      }
+                      style={{ width: BADGE_W, backgroundColor: style.bg, borderColor: style.border, borderWidth: 1 }}
+                      className="h-11 rounded-xl items-center justify-center"
+                    >
+                      <Text style={{ color: style.text }} className="font-bold">
+                        {set.setType === 'NORMAL' ? number : set.setType === 'WARMUP' ? 'W' : 'D'}
+                      </Text>
+                    </TouchableOpacity>
 
-                  {set.repMode === 'RANGE' ? (
-                    <View className="flex-1 flex-row items-center">
+                    <View style={{ flex: WEIGHT_FLEX }}>
                       <NumberInput
-                        value={set.min}
-                        onChangeText={(text) => changeSet(exercise.key, set.key, { min: text })}
-                        placeholder="min"
-                        className="flex-1"
-                      />
-                      <Text className="text-[#91A5C0] mx-1.5">-</Text>
-                      <NumberInput
-                        value={set.max}
-                        onChangeText={(text) => changeSet(exercise.key, set.key, { max: text })}
-                        placeholder="max"
-                        className="flex-1"
+                        value={set.weight}
+                        onChangeText={(text) => changeSet(exercise.key, set.key, { weight: text })}
+                        placeholder="-"
+                        decimal
+                        maxLength={6}
                       />
                     </View>
-                  ) : (
-                    <NumberInput
-                      value={set.reps}
-                      onChangeText={(text) => changeSet(exercise.key, set.key, { reps: text })}
-                      placeholder="-"
-                      className="flex-1"
-                    />
-                  )}
 
-                  {/* Switch this one set between a fixed number and a range */}
-                  <TouchableOpacity
-                    onPress={() =>
-                      changeSet(exercise.key, set.key, { repMode: set.repMode === 'RANGE' ? 'REPS' : 'RANGE' })
-                    }
-                    hitSlop={6}
-                    className="w-8 h-10 items-center justify-center"
-                  >
-                    <Ionicons name="swap-horizontal" size={18} color="#8CB5EC" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => removeSet(exercise.key, set.key)}
-                    disabled={exercise.sets.length === 1}
-                    hitSlop={6}
-                    className="w-8 h-10 items-center justify-center"
-                  >
-                    <Ionicons name="close" size={18} color={exercise.sets.length === 1 ? '#344C66' : '#F2A0A0'} />
-                  </TouchableOpacity>
-                </View>
-              ))}
+                    {set.repMode === 'RANGE' ? (
+                      <View style={{ flex: REPS_FLEX }} className="flex-row items-center">
+                        <View className="flex-1">
+                          <NumberInput
+                            value={set.min}
+                            onChangeText={(text) => changeSet(exercise.key, set.key, { min: text })}
+                            placeholder="min"
+                          />
+                        </View>
+                        <Text className="text-[#91A5C0] mx-1">-</Text>
+                        <View className="flex-1">
+                          <NumberInput
+                            value={set.max}
+                            onChangeText={(text) => changeSet(exercise.key, set.key, { max: text })}
+                            placeholder="max"
+                          />
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={{ flex: REPS_FLEX }}>
+                        <NumberInput
+                          value={set.reps}
+                          onChangeText={(text) => changeSet(exercise.key, set.key, { reps: text })}
+                          placeholder="reps"
+                        />
+                      </View>
+                    )}
+
+                    <TouchableOpacity
+                      onPress={() => removeSet(exercise.key, set.key)}
+                      disabled={exercise.sets.length === 1}
+                      hitSlop={6}
+                      style={{ width: RIGHT_W }}
+                      className="h-11 items-center justify-center"
+                    >
+                      <Ionicons name="close-circle" size={22} color={exercise.sets.length === 1 ? '#344C66' : '#F2A0A0'} />
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
 
               <TouchableOpacity
                 onPress={() => addSet(exercise.key)}
                 activeOpacity={0.8}
-                className="h-10 rounded-lg bg-[#263B55] flex-row items-center justify-center gap-1 mt-1"
+                className="h-11 rounded-xl bg-[#263B55] flex-row items-center justify-center gap-1 mt-1"
               >
                 <Ionicons name="add" size={16} color="#DCE6F4" />
                 <Text className="text-[#DCE6F4] text-sm font-semibold">Add set</Text>

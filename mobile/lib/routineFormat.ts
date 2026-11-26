@@ -18,7 +18,7 @@ export function programImage(imageKey: string | null) {
 }
 
 // "8-10" for a range set, "12" for a fixed-reps set, "-" when nothing is set
-function repsText(set: RoutineSet): string {
+export function repsText(set: RoutineSet): string {
   if (set.repMode === 'RANGE' && set.targetRepsMin !== null && set.targetRepsMax !== null) {
     return `${set.targetRepsMin}-${set.targetRepsMax}`;
   }
@@ -28,21 +28,35 @@ function repsText(set: RoutineSet): string {
   return '-';
 }
 
-// One text for a whole exercise: "8-10" if every set matches, otherwise "12 / 10 / 8"
-export function describeReps(sets: RoutineSet[]): string {
-  if (sets.length === 0) return '-';
-  const texts = sets.map(repsText);
-  const unique = texts.filter((text, i) => texts.indexOf(text) === i);
-  return unique.length === 1 ? unique[0] : texts.join(' / ');
-}
-
 export function plural(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? '' : 's'}`;
 }
 
-// Total number of sets in a routine
+// How many sets of each kind an exercise has
+export function setCounts(sets: RoutineSet[]) {
+  return {
+    main: sets.filter((set) => set.setType === 'NORMAL').length,
+    warmup: sets.filter((set) => set.setType === 'WARMUP').length,
+    drop: sets.filter((set) => set.setType === 'DROP').length,
+  };
+}
+
+// "sets" always means the main (working) sets. Warm-up and drop sets are counted on their own.
 export function countSets(routine: Routine): number {
-  return routine.exercises.reduce((total, item) => total + item.sets.length, 0);
+  return routine.exercises.reduce((total, item) => total + setCounts(item.sets).main, 0);
+}
+
+export function countWarmups(routine: Routine): number {
+  return routine.exercises.reduce((total, item) => total + setCounts(item.sets).warmup, 0);
+}
+
+export function countDrops(routine: Routine): number {
+  return routine.exercises.reduce((total, item) => total + setCounts(item.sets).drop, 0);
+}
+
+// "50 kg", or "-" when the set has no weight
+export function weightText(set: RoutineSet): string {
+  return set.targetWeightKg === null ? '-' : `${set.targetWeightKg} kg`;
 }
 
 // The muscles a routine trains most often (by number of exercises), for the chips

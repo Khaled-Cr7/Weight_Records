@@ -13,8 +13,14 @@ const name = z.string({ error: "Name is required" }).trim().min(1, "Name is requ
 const description = z.string().trim().max(1000, "Description must be at most 1000 characters").nullable().optional();
 const uuid = z.string().refine(isUuid, "Invalid id");
 
-// The pictures the app knows for programs (see mobile/lib/routineFormat.ts)
-const imageKey = z.enum(["bench", "dumbell", "plates", "incline", "barbell"]).nullable().optional();
+
+const imageKey = z
+  .union([
+    z.enum(["bench", "dumbell", "plates", "incline", "barbell"]),
+    z.string().max(40).regex(/^emoji:\S+$/u, "Invalid icon"),
+  ])
+  .nullable()
+  .optional();
 
 const reps = z
   .number({ error: "Enter reps as a number (a range needs both a minimum and a maximum)" })
@@ -31,13 +37,17 @@ const weightKg = z
 
 const setType = z.enum(["NORMAL", "WARMUP", "DROP"]).default("NORMAL");
 
-// A set is either "REPS" (one target number, may be empty) or "RANGE" (min and max, both required)
+// Every set needs reps: one number ("REPS") or a minimum and a maximum ("RANGE"). The weight is optional.
+const repsRequired = z
+  .number({ error: "Every set needs reps" })
+  .int("Reps must be a whole number").min(1, "Reps must be at least 1").max(999, "Reps must be at most 999");
+
 const setSchema = z.discriminatedUnion("repMode", [
   z.object({
     repMode: z.literal("REPS"),
     setType,
     targetWeightKg: weightKg.nullable().optional(),
-    targetReps: reps.nullable().optional(),
+    targetReps: repsRequired,
   }),
   z
     .object({
@@ -110,7 +120,7 @@ export function toExerciseCreates(items: RoutineExerciseInput[]): Prisma.Routine
         setType: set.setType,
         targetWeightKg: set.targetWeightKg ?? null,
         repMode: set.repMode,
-        targetReps: set.repMode === "REPS" ? (set.targetReps ?? null) : null,
+        targetReps: set.repMode === "REPS" ? set.targetReps : null,
         targetRepsMin: set.repMode === "RANGE" ? set.targetRepsMin : null,
         targetRepsMax: set.repMode === "RANGE" ? set.targetRepsMax : null,
       })),

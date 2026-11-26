@@ -23,11 +23,11 @@ export const ProgramService = {
     return apiPost<ProgramDetail>(`/api/programs/${encodeURIComponent(id)}/copy`, {});
   },
 
-  create: (input: { name: string; description?: string }): Promise<ProgramDetail> => {
+  create: (input: { name: string; description?: string; imageKey?: string }): Promise<ProgramDetail> => {
     return apiPost<ProgramDetail>('/api/programs', input);
   },
 
-  update: (id: string, input: { name?: string; description?: string }): Promise<ProgramDetail> => {
+  update: (id: string, input: { name?: string; description?: string; imageKey?: string }): Promise<ProgramDetail> => {
     return apiPatch<ProgramDetail>(`/api/programs/${encodeURIComponent(id)}`, input);
   },
 

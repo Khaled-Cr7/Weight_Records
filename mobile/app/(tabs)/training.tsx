@@ -269,12 +269,15 @@ export default function Training() {
         title="New program"
         submitLabel="Create"
         onClose={() => setCreatingProgram(false)}
-        onSubmit={async (name, description) => {
-          const created = await ProgramService.create({ name, description });
+        withIcon
+        onSubmit={async (name, description, icon) => {
+          const created = await ProgramService.create({ name, description, imageKey: icon });
           setCreatingProgram(false);
           openProgram(created.id);
         }}
+        
       />
+      
     </SafeAreaView>
   );
 }

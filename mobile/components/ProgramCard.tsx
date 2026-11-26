@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { plural, programImage } from '@/lib/routineFormat';
+import { ProgramArt } from '@/components/ProgramArt';
+import { plural } from '@/lib/routineFormat';
 import type { ProgramSummary } from '@/services/types/program';
 
 // Half-width program card for two-column grids
@@ -12,11 +13,9 @@ export function ProgramCard({ program, onPress }: { program: ProgramSummary; onP
       activeOpacity={0.8}
       className="w-[48%] bg-[#142238] border border-[#263B55] rounded-2xl p-4 mb-4"
     >
-      <Image
-        source={programImage(program.imageKey)}
-        className="w-full h-24"
-        resizeMode="contain"
-      />
+      <View className="items-center">
+        <ProgramArt imageKey={program.imageKey} size={96} />
+      </View>
 
       <Text className="text-[#F1F5FB] text-base font-bold mt-3">
         {program.name}

@@ -1,12 +1,26 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { countSets, describeReps, plural, topMuscles } from '@/lib/routineFormat';
+import { SetTags } from '@/components/SetTags';
+import { countDrops, countSets, countWarmups, topMuscles } from '@/lib/routineFormat';
+import { SET_STYLE } from '@/lib/setStyle';
 import { RoutineService } from '@/services/programService';
 import type { Routine } from '@/services/types/program';
+
+function Stat({ value, label, color }: { value: number; label: string; color: string }) {
+  return (
+    <View className="mr-6">
+      <Text style={{ color }} className="text-3xl font-bold">
+        {value}
+      </Text>
+      <Text className="text-[#91A5C0] text-[10px] font-bold tracking-widest mt-0.5">{label}</Text>
+    </View>
+  );
+}
 
 export default function RoutineScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -112,6 +126,8 @@ export default function RoutineScreen() {
   }
 
   const muscles = topMuscles(routine, 4);
+  const warmups = countWarmups(routine);
+  const drops = countDrops(routine);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B1422]">
@@ -122,29 +138,40 @@ export default function RoutineScreen() {
         contentContainerClassName="px-5 pt-5 pb-16"
         showsVerticalScrollIndicator={false}
       >
-        {/* Title */}
-        <Text className="text-[#F1F5FB] text-3xl font-bold">{routine.name}</Text>
-        {routine.description ? (
-          <Text className="text-[#91A5C0] text-sm mt-2 leading-5">{routine.description}</Text>
-        ) : null}
+        {/* Hero */}
+        <View className="rounded-3xl overflow-hidden border border-[#344C66] p-5">
+          <LinearGradient
+            colors={['#223D63', '#142238']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
 
-        <View className="flex-row gap-2 mt-4">
-          {[plural(routine.exercises.length, 'exercise'), plural(countSets(routine), 'set')].map((label) => (
-            <View key={label} className="bg-[#142238] border border-[#263B55] rounded-full px-3 py-1.5">
-              <Text className="text-[#DCE6F4] text-xs font-semibold">{label}</Text>
-            </View>
-          ))}
-        </View>
+          <Text className="text-[#8CB5EC] text-xs font-bold tracking-widest">
+            {routine.isReadyMade ? 'READY-MADE ROUTINE' : 'MY ROUTINE'}
+          </Text>
+          <Text className="text-[#F1F5FB] text-3xl font-bold mt-2">{routine.name}</Text>
+          {routine.description ? (
+            <Text className="text-[#91A5C0] text-sm mt-2 leading-5">{routine.description}</Text>
+          ) : null}
 
-        {muscles.length > 0 && (
-          <View className="flex-row flex-wrap gap-2 mt-3">
-            {muscles.map((muscle) => (
-              <View key={muscle} className="bg-[#263B55] rounded-full px-3 py-1">
-                <Text className="text-[#8CB5EC] text-xs capitalize">{`${muscle}\u00A0`}</Text>
-              </View>
-            ))}
+          <View className="flex-row mt-5">
+            <Stat value={routine.exercises.length} label="EXERCISES" color="#F1F5FB" />
+            <Stat value={countSets(routine)} label="SETS" color={SET_STYLE.NORMAL.text} />
+            {warmups > 0 && <Stat value={warmups} label="WARM-UP" color={SET_STYLE.WARMUP.text} />}
+            {drops > 0 && <Stat value={drops} label="DROP" color={SET_STYLE.DROP.text} />}
           </View>
-        )}
+
+          {muscles.length > 0 && (
+            <View className="flex-row flex-wrap gap-2 mt-4">
+              {muscles.map((muscle) => (
+                <View key={muscle} className="bg-[#0B1422]/50 border border-[#344C66] rounded-full px-3 py-1">
+                  <Text className="text-[#DCE6F4] text-xs capitalize">{`${muscle}\u00A0`}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
 
         {/* Ready-made routines are copied into the user's own routines */}
         {routine.isReadyMade ? (
@@ -152,7 +179,7 @@ export default function RoutineScreen() {
             onPress={addToMyRoutines}
             disabled={busy}
             activeOpacity={0.85}
-            className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-6"
+            className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-4"
           >
             {busy ? (
               <ActivityIndicator color="#0B1422" />
@@ -164,7 +191,7 @@ export default function RoutineScreen() {
             )}
           </TouchableOpacity>
         ) : (
-          <View className="flex-row gap-3 mt-6">
+          <View className="flex-row gap-3 mt-4">
             <TouchableOpacity
               onPress={() => router.push({ pathname: '/routine-editor', params: { id: routine.id } } as any)}
               disabled={busy}
@@ -197,51 +224,53 @@ export default function RoutineScreen() {
           </View>
         )}
 
-        {routine.exercises.map((item) => {
-          const reps = describeReps(item.sets);
-
-          return (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() =>
-                router.push({
-                  pathname: '/exercises/[id]',
-                  params: { id: item.exercise.id, sets: String(item.sets.length), reps },
-                } as any)
-              }
-              activeOpacity={0.8}
-              className="flex-row items-center bg-[#142238] border border-[#263B55] rounded-2xl p-3 mb-3"
-            >
+        {routine.exercises.map((item, index) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() =>
+              router.push({
+                pathname: '/exercises/[id]',
+                params: { id: item.exercise.id, setsJson: JSON.stringify(item.sets) },
+              } as any)
+            }
+            activeOpacity={0.8}
+            className="bg-[#142238] border border-[#263B55] rounded-3xl p-3 mb-3"
+          >
+            <View className="flex-row items-center">
               {item.exercise.image ? (
                 <Image
                   source={{ uri: item.exercise.image }}
-                  className="w-16 h-16 rounded-xl bg-[#263B55]"
+                  className="w-[76px] h-[76px] rounded-2xl bg-[#263B55]"
                   resizeMode="cover"
                 />
               ) : (
-                <View className="w-16 h-16 rounded-xl bg-[#263B55] items-center justify-center">
-                  <Ionicons name="barbell-outline" size={22} color="#8CB5EC" />
+                <View className="w-[76px] h-[76px] rounded-2xl bg-[#263B55] items-center justify-center">
+                  <Ionicons name="barbell-outline" size={24} color="#8CB5EC" />
                 </View>
               )}
 
               <View className="flex-1 ml-3">
-                <Text className="text-[#F1F5FB] font-bold" numberOfLines={2}>
+                <Text className="text-[#7186A1] text-[10px] font-bold tracking-widest">
+                  {`EXERCISE ${index + 1}`}
+                </Text>
+                <Text className="text-[#F1F5FB] font-bold text-base mt-0.5" numberOfLines={2}>
                   {item.exercise.name}
                 </Text>
-                <Text className="text-[#91A5C0] text-xs mt-1 capitalize" numberOfLines={1}>
+                <Text className="text-[#91A5C0] text-xs mt-0.5 capitalize" numberOfLines={1}>
                   {[item.exercise.primaryMuscles[0], item.exercise.equipment ?? 'no equipment']
                     .filter(Boolean)
                     .join(' • ')}
                 </Text>
-                <Text className="text-[#8CB5EC] text-xs font-semibold mt-2">
-                  {`${plural(item.sets.length, 'set')} · ${reps} reps`}
-                </Text>
               </View>
 
               <Ionicons name="chevron-forward" size={18} color="#7186A1" />
-            </TouchableOpacity>
-          );
-        })}
+            </View>
+
+            <View className="mt-3">
+              <SetTags sets={item.sets} />
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
