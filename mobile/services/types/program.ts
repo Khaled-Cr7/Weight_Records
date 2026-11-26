@@ -75,3 +75,25 @@ export interface RoutineSummary {
   updatedAt: string;
   exerciseCount: number;
 }
+
+// ---- What the app sends when creating or saving ----
+
+export interface RoutineSetInput {
+  setType: SetType;
+  repMode: RepMode;
+  targetWeightKg: number | null;
+  targetReps?: number | null; // REPS mode
+  targetRepsMin?: number; // RANGE mode
+  targetRepsMax?: number;
+}
+
+export interface RoutineExerciseInput {
+  exerciseId: string;
+  restSeconds: number;
+  sets: RoutineSetInput[];
+}
+
+export interface RoutineInput {
+  name: string;
+  exercises: RoutineExerciseInput[];
+}

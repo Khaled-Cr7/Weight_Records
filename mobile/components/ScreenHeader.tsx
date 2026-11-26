@@ -3,8 +3,8 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-// Back button (and an optional title) for the dark screens
-export function ScreenHeader({ title }: { title?: string }) {
+// Back button (and an optional title and right-hand button) for the dark screens
+export function ScreenHeader({ title, right }: { title?: string; right?: React.ReactNode }) {
   const router = useRouter();
 
   return (
@@ -17,7 +17,9 @@ export function ScreenHeader({ title }: { title?: string }) {
         <Ionicons name="chevron-back" size={22} color="#F1F5FB" />
       </TouchableOpacity>
 
-      {title ? <Text className="text-[#F1F5FB] text-2xl font-bold ml-4">{title}</Text> : null}
+      {title ? <Text className="text-[#F1F5FB] text-2xl font-bold ml-4 flex-1">{title}</Text> : <View className="flex-1" />}
+
+      {right}
     </View>
   );
 }

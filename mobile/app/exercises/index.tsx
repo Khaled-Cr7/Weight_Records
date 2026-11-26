@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ExerciseService } from '@/services/exerciseService';
+import { useExercisePicker } from '@/store/exercisePicker';
 import type { ExerciseFilters, ExerciseListItem } from '@/services/types/exercise';
 
 const PAGE_SIZE = 20;
@@ -39,6 +40,26 @@ const Chip = ({ label, active, onPress }: ChipProps) => (
 
 export default function ExerciseLibrary() {
   const router = useRouter();
+
+  // Opened from the routine editor to choose exercises (several can be ticked)
+  const { pick } = useLocalSearchParams<{ pick?: string }>();
+  const picking = pick === '1';
+  const [selected, setSelected] = useState<Record<string, ExerciseListItem>>({});
+  const selectedCount = Object.keys(selected).length;
+
+  const toggleSelected = (item: ExerciseListItem) => {
+    setSelected((previous) => {
+      const next = { ...previous };
+      if (next[item.id]) delete next[item.id];
+      else next[item.id] = item;
+      return next;
+    });
+  };
+
+  const confirmPick = () => {
+    useExercisePicker.getState().setPicked(Object.values(selected));
+    router.back();
+  };
 
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState(''); // the search text after a short pause
@@ -129,9 +150,11 @@ export default function ExerciseLibrary() {
 
   const renderItem = ({ item }: { item: ExerciseListItem }) => (
     <TouchableOpacity
-      onPress={() => openExercise(item.id)}
+      onPress={() => (picking ? toggleSelected(item) : openExercise(item.id))}
       activeOpacity={0.8}
-      className="flex-row items-center bg-[#142238] border border-[#263B55] rounded-2xl p-3 mb-3"
+      className={`flex-row items-center bg-[#142238] border rounded-2xl p-3 mb-3 ${
+        picking && selected[item.id] ? 'border-[#719AD1]' : 'border-[#263B55]'
+      }`}
     >
       {item.image ? (
         <Image
@@ -154,7 +177,20 @@ export default function ExerciseLibrary() {
         </Text>
       </View>
 
-      <Ionicons name="chevron-forward" size={18} color="#7186A1" />
+      {picking ? (
+        <View className="flex-row items-center">
+          <TouchableOpacity onPress={() => openExercise(item.id)} hitSlop={10} className="mr-3">
+            <Ionicons name="information-circle-outline" size={22} color="#7186A1" />
+          </TouchableOpacity>
+          <Ionicons
+            name={selected[item.id] ? 'checkmark-circle' : 'ellipse-outline'}
+            size={26}
+            color={selected[item.id] ? '#719AD1' : '#7186A1'}
+          />
+        </View>
+      ) : (
+        <Ionicons name="chevron-forward" size={18} color="#7186A1" />
+      )}
     </TouchableOpacity>
   );
 
@@ -168,7 +204,7 @@ export default function ExerciseLibrary() {
         >
           <Ionicons name="chevron-back" size={22} color="#F1F5FB" />
         </TouchableOpacity>
-        <Text className="text-[#F1F5FB] text-2xl font-bold ml-4">Exercise Library</Text>
+        <Text className="text-[#F1F5FB] text-2xl font-bold ml-4">{picking ? 'Choose exercises' : 'Exercise Library'}</Text>
       </View>
 
       {/* Search */}
@@ -257,7 +293,7 @@ export default function ExerciseLibrary() {
           data={items}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerClassName="px-5 pb-10"
+          contentContainerClassName={picking ? 'px-5 pb-28' : 'px-5 pb-10'}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           onEndReached={loadMore}
@@ -269,6 +305,26 @@ export default function ExerciseLibrary() {
             loadingMore ? <ActivityIndicator color="#8CB5EC" className="my-4" /> : undefined
           }
         />
+      )}
+
+      {/* Confirm bar when choosing exercises for a routine */}
+      {picking && (
+        <View className="absolute left-0 right-0 bottom-0 px-5 pb-8 pt-3 bg-[#0B1422] border-t border-[#263B55]">
+          <TouchableOpacity
+            onPress={confirmPick}
+            disabled={selectedCount === 0}
+            activeOpacity={0.85}
+            className={`h-12 rounded-xl items-center justify-center ${
+              selectedCount === 0 ? 'bg-[#263B55]' : 'bg-[#719AD1]'
+            }`}
+          >
+            <Text className={`font-bold ${selectedCount === 0 ? 'text-[#7186A1]' : 'text-[#0B1422]'}`}>
+              {selectedCount === 0
+                ? 'Tick the exercises to add'
+                : `Add ${selectedCount} ${selectedCount === 1 ? 'exercise' : 'exercises'}`}
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </SafeAreaView>
   );

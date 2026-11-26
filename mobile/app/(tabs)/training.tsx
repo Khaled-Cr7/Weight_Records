@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { NameModal } from '@/components/NameModal';
 import { ProgramCard } from '@/components/ProgramCard';
 import { plural } from '@/lib/routineFormat';
 import { ProgramService, RoutineService } from '@/services/programService';
@@ -21,6 +22,7 @@ export default function Training() {
   const [myPrograms, setMyPrograms] = useState<ProgramSummary[]>([]);
   const [routines, setRoutines] = useState<RoutineSummary[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [creatingProgram, setCreatingProgram] = useState(false);
 
   // Loads when the tab is opened and again each time the user comes back to it
   const load = useCallback(() => {
@@ -238,25 +240,41 @@ export default function Training() {
               ))
             )}
 
-            {/* Future workout feature */}
-            <View className="bg-[#142238] border border-dashed border-[#344C66] rounded-2xl p-5 mt-6 items-center">
-              <Ionicons
-                name="add-circle-outline"
-                size={30}
-                color="#8CB5EC"
-              />
+            {/* Create your own */}
+            <View className="flex-row gap-3 mt-6">
+              <TouchableOpacity
+                onPress={() => router.push('/routine-editor' as any)}
+                activeOpacity={0.85}
+                className="flex-1 bg-[#142238] border border-dashed border-[#344C66] rounded-2xl p-4 items-center"
+              >
+                <Ionicons name="add-circle-outline" size={28} color="#8CB5EC" />
+                <Text className="text-[#F1F5FB] font-bold mt-2">New routine</Text>
+              </TouchableOpacity>
 
-              <Text className="text-[#F1F5FB] font-bold text-base mt-3">
-                Create Your Own Routine
-              </Text>
-
-              <Text className="text-[#91A5C0] text-sm text-center mt-2">
-                Custom routines and workout logging will be available in a future update.
-              </Text>
+              <TouchableOpacity
+                onPress={() => setCreatingProgram(true)}
+                activeOpacity={0.85}
+                className="flex-1 bg-[#142238] border border-dashed border-[#344C66] rounded-2xl p-4 items-center"
+              >
+                <Ionicons name="albums-outline" size={28} color="#8CB5EC" />
+                <Text className="text-[#F1F5FB] font-bold mt-2">New program</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
       </ScrollView>
+
+      <NameModal
+        visible={creatingProgram}
+        title="New program"
+        submitLabel="Create"
+        onClose={() => setCreatingProgram(false)}
+        onSubmit={async (name, description) => {
+          const created = await ProgramService.create({ name, description });
+          setCreatingProgram(false);
+          openProgram(created.id);
+        }}
+      />
     </SafeAreaView>
   );
 }

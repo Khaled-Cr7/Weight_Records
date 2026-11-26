@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { countSets, describeReps, plural, topMuscles } from '@/lib/routineFormat';
 import { RoutineService } from '@/services/programService';
@@ -14,36 +14,72 @@ export default function RoutineScreen() {
 
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState('');
 
+  // Loads when the screen opens and again when we come back to it (after editing)
   const load = useCallback(() => {
-    setStatus('loading');
+    let cancelled = false;
+
     RoutineService.getById(id)
       .then((data) => {
+        if (cancelled) return;
         setRoutine(data);
         setStatus('ready');
       })
-      .catch(() => setStatus('error'));
+      .catch((error) => {
+        if (cancelled) return;
+        setLoadError(error instanceof Error ? error.message : String(error));
+        setStatus((current) => (current === 'ready' ? current : 'error'));
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(load);
 
-  const [adding, setAdding] = useState(false);
-  const [addError, setAddError] = useState<string | null>(null);
+  const retry = () => {
+    setStatus('loading');
+    load();
+  };
 
   // Copies this ready-made routine into the user's own routines, then opens the copy
   const addToMyRoutines = async () => {
-    if (!routine || adding) return;
-    setAdding(true);
-    setAddError(null);
+    if (!routine || busy) return;
+    setBusy(true);
+    setActionError(null);
     try {
       const copy = await RoutineService.copy(routine.id);
       router.replace({ pathname: '/routines/[id]', params: { id: copy.id } } as any);
     } catch (error) {
-      setAddError(error instanceof Error ? error.message : "Couldn't add the routine");
-      setAdding(false);
+      setActionError(error instanceof Error ? error.message : "Couldn't add the routine");
+      setBusy(false);
     }
+  };
+
+  const confirmDelete = () => {
+    if (!routine) return;
+    Alert.alert(`Delete "${routine.name}"?`, 'Workouts you have finished are kept.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          setBusy(true);
+          setActionError(null);
+          try {
+            await RoutineService.remove(routine.id);
+            router.back();
+          } catch (error) {
+            setActionError(error instanceof Error ? error.message : "Couldn't delete the routine");
+            setBusy(false);
+          }
+        },
+      },
+    ]);
   };
 
   if (status === 'loading') {
@@ -63,8 +99,9 @@ export default function RoutineScreen() {
         <ScreenHeader />
         <View className="flex-1 items-center justify-center px-8">
           <Text className="text-[#91A5C0] text-center">Couldn't load this routine.</Text>
+          {loadError ? <Text className="text-[#F2A0A0] text-xs text-center mt-2">{loadError}</Text> : null}
           <TouchableOpacity
-            onPress={load}
+            onPress={retry}
             className="bg-[#719AD1] h-11 px-6 rounded-xl items-center justify-center mt-4"
           >
             <Text className="text-[#0B1422] font-bold">Try again</Text>
@@ -110,26 +147,46 @@ export default function RoutineScreen() {
         )}
 
         {/* Ready-made routines are copied into the user's own routines */}
-        {routine.isReadyMade && (
-          <>
+        {routine.isReadyMade ? (
+          <TouchableOpacity
+            onPress={addToMyRoutines}
+            disabled={busy}
+            activeOpacity={0.85}
+            className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-6"
+          >
+            {busy ? (
+              <ActivityIndicator color="#0B1422" />
+            ) : (
+              <>
+                <Ionicons name="add-circle-outline" size={20} color="#0B1422" />
+                <Text className="text-[#0B1422] font-bold">Add to my routines</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <View className="flex-row gap-3 mt-6">
             <TouchableOpacity
-              onPress={addToMyRoutines}
-              disabled={adding}
+              onPress={() => router.push({ pathname: '/routine-editor', params: { id: routine.id } } as any)}
+              disabled={busy}
               activeOpacity={0.85}
-              className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-6"
+              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
             >
-              {adding ? (
-                <ActivityIndicator color="#0B1422" />
-              ) : (
-                <>
-                  <Ionicons name="add-circle-outline" size={20} color="#0B1422" />
-                  <Text className="text-[#0B1422] font-bold">Add to my routines</Text>
-                </>
-              )}
+              <Ionicons name="create-outline" size={18} color="#8CB5EC" />
+              <Text className="text-[#DCE6F4] font-semibold">Edit</Text>
             </TouchableOpacity>
-            {addError && <Text className="text-[#F2A0A0] text-xs text-center mt-2">{addError}</Text>}
-          </>
+            <TouchableOpacity
+              onPress={confirmDelete}
+              disabled={busy}
+              activeOpacity={0.85}
+              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
+            >
+              <Ionicons name="trash-outline" size={18} color="#F2A0A0" />
+              <Text className="text-[#F2A0A0] font-semibold">Delete</Text>
+            </TouchableOpacity>
+          </View>
         )}
+
+        {actionError && <Text className="text-[#F2A0A0] text-xs text-center mt-3">{actionError}</Text>}
 
         {/* Exercises */}
         <Text className="text-[#F1F5FB] text-xl font-bold mt-8 mb-4">Exercises</Text>

@@ -52,7 +52,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
 type Params = Record<string, string | number | undefined>;
 
 async function request<T>(
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
   path: string,
   options: { params?: Params; body?: unknown } = {}
 ): Promise<T> {
@@ -105,4 +105,16 @@ export function apiGet<T>(path: string, params: Params = {}): Promise<T> {
 
 export function apiPost<T>(path: string, body: unknown): Promise<T> {
   return request<T>("POST", path, { body });
+}
+
+export function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  return request<T>("PATCH", path, { body });
+}
+
+export function apiPut<T>(path: string, body: unknown): Promise<T> {
+  return request<T>("PUT", path, { body });
+}
+
+export function apiDelete<T>(path: string): Promise<T> {
+  return request<T>("DELETE", path);
 }
