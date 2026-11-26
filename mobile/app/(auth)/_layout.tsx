@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +25,7 @@ export default function AuthLayout() {
     <SafeAreaView className="flex-1 bg-[#0B1422]">
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
         <ScrollView
           className="flex-1"

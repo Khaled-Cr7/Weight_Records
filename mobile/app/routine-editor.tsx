@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  KeyboardAvoidingView,
   ScrollView,
   Text,
   TextInput,
@@ -345,12 +346,14 @@ export default function RoutineEditor() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B1422]">
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
       <ScreenHeader title={isEdit ? 'Edit routine' : 'New routine'} right={saveButton} />
 
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-5 pt-5 pb-40"
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         {/* Name */}
@@ -621,7 +624,8 @@ export default function RoutineEditor() {
           <Ionicons name="add-circle-outline" size={20} color="#8CB5EC" />
           <Text className="text-[#8CB5EC] font-bold">Add exercises</Text>
         </TouchableOpacity>
-      </ScrollView>
+       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

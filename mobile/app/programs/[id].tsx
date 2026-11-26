@@ -236,19 +236,23 @@ export default function ProgramScreen() {
               onPress={() => setEditing(true)}
               disabled={busy}
               activeOpacity={0.85}
-              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
+              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] justify-center"
             >
-              <Ionicons name="create-outline" size={18} color="#8CB5EC" />
-              <Text className="text-[#DCE6F4] font-semibold">Edit details</Text>
+              <Text className="text-[#DCE6F4] font-semibold text-center">
+                <Ionicons name="create-outline" size={16} color="#8CB5EC" />
+                {'  Edit details'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={confirmDelete}
               disabled={busy}
               activeOpacity={0.85}
-              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
+              className="flex-1 h-11 rounded-xl bg-[#142238] border border-[#263B55] justify-center"
             >
-              <Ionicons name="trash-outline" size={18} color="#F2A0A0" />
-              <Text className="text-[#F2A0A0] font-semibold">Delete</Text>
+              <Text className="text-[#F2A0A0] font-semibold text-center">
+                <Ionicons name="trash-outline" size={16} color="#F2A0A0" />
+                {'  Delete'}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -263,8 +267,12 @@ export default function ProgramScreen() {
           </View>
 
           {isOwner && program.routines.length > 1 && (
-            <TouchableOpacity onPress={() => setReordering((current) => !current)} hitSlop={8}>
-              <Text className="text-[#8CB5EC] font-semibold">{reordering ? 'Done' : 'Reorder'}</Text>
+            <TouchableOpacity
+              onPress={() => setReordering((current) => !current)}
+              hitSlop={8}
+              style={{ width: 84 }}
+            >
+              <Text className="text-[#8CB5EC] font-semibold text-right">{reordering ? 'Done' : 'Reorder'}</Text>
             </TouchableOpacity>
           )}
         </View>
