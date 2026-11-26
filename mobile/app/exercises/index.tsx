@@ -122,8 +122,8 @@ export default function ExerciseLibrary() {
 
   const openExercise = (exerciseId: string) => {
     router.push({
-      pathname: '/schedule/[detail]',
-      params: { exerciseId },
+      pathname: '/exercises/[id]',
+      params: { id: exerciseId },
     } as any);
   };
 

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,37 +9,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { images } from '@/constants/images';
+import { ProgramCard } from '@/components/ProgramCard';
+import { ProgramService } from '@/services/programService';
+import type { ProgramSummary } from '@/services/types/program';
 import { useAuth } from '@/store/auth';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const programs = [
-  {
-    title: 'Bro Split',
-    days: '5 days / week',
-    image: images.bench,
-    route: 'broSplit',
-  },
-  {
-    title: 'PPL Split',
-    days: '6 days / week',
-    image: images.dumbell,
-    route: 'pplSplit',
-  },
-  {
-    title: 'Upper Lower',
-    days: '4 days / week',
-    image: images.plates,
-    route: 'ulSplit',
-  },
-  {
-    title: 'Full Body',
-    days: '3 days / week',
-    image: images.incline,
-    route: 'fullSplit',
-  },
-];
 
 function StatCard({
   value,
@@ -67,11 +42,16 @@ function StatCard({
 export default function Home() {
   const router = useRouter();
 
-  const openSchedule = (route: string) => {
-    router.push({
-      pathname: '/schedule',
-      params: { route },
-    });
+  const [programs, setPrograms] = useState<ProgramSummary[]>([]);
+
+  useEffect(() => {
+    ProgramService.list()
+      .then((data) => setPrograms(data.readyMade))
+      .catch(() => {});
+  }, []);
+
+  const openProgram = (id: string) => {
+    router.push({ pathname: '/programs/[id]', params: { id } } as any);
   };
 
   const signOut = useAuth((state) => state.signOut);
@@ -299,37 +279,11 @@ export default function Home() {
 
         <View className="flex-row flex-wrap justify-between">
           {programs.map((program) => (
-            <TouchableOpacity
-              key={program.route}
-              onPress={() => openSchedule(program.route)}
-              activeOpacity={0.8}
-              className="w-[48%] bg-[#142238] border border-[#263B55] rounded-2xl p-4 mb-4"
-            >
-              <Image
-                source={program.image}
-                className="w-full h-24"
-                resizeMode="contain"
-              />
-
-              <Text className="text-[#F1F5FB] text-base font-bold mt-3">
-                {program.title}
-              </Text>
-
-              <Text className="text-[#91A5C0] text-xs mt-1">
-                {program.days}
-              </Text>
-
-              <View className="flex-row justify-between items-center mt-4">
-                <Text className="text-[#8CB5EC] text-xs font-semibold">
-                  View schedule
-                </Text>
-                <Ionicons
-                  name="arrow-forward"
-                  size={16}
-                  color="#8CB5EC"
-                />
-              </View>
-            </TouchableOpacity>
+            <ProgramCard
+              key={program.id}
+              program={program}
+              onPress={() => openProgram(program.id)}
+            />
           ))}
         </View>
 

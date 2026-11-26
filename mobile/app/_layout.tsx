@@ -42,8 +42,6 @@ export default function RootLayout() {
       {/* Note the parentheses here to match your folder name (tabs) */}
     <Stack.Screen name="(tabs)" />
     <Stack.Screen name="(auth)" />
-    <Stack.Screen name="schedule/index"/>
-    <Stack.Screen name="schedule/[detail]"/>
 
       {/* <Stack.Screen
         name="schedule/[route]" // Matches the filename
