@@ -9013,33 +9013,25 @@
     "id": "Incline_Inner_Biceps_Curl"
   },
   {
-    "name": "One Arm Cable Curl",
-    "force": "pull",
-    "level": "beginner",
-    "mechanic": "isolation",
-    "equipment": "cable",
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "instructions": [
-      "Stand facing a low pulley machine with a single handle attachment. Select the appropriate weight.",
-      "Grasp the handle with one hand using an underhand grip (palm facing up). Stand far enough back so that there is tension on the cable even when your arm is fully extended.",
-      "Keep your elbow tucked into your side and your torso stationary. This will be your starting position.",
-      "While keeping the upper arm stationary, curl the weight forward while contracting your biceps. Continue the movement until your biceps are fully contracted and the handle is at shoulder level. Exhale as you perform this portion of the movement.",
-      "Hold the contracted position for a second as you squeeze your biceps.",
-      "Slowly begin to bring the handle back to the starting position as your inhale.",
-      "Repeat for the recommended amount of repetitions and then switch arms.",
-      "Tip: Only the forearms should move. Your upper arms should remain stationary at your sides throughout the exercise."
-    ],
-    "category": "strength",
-    "images": [
-      "One_Arm_Cable_Curl/0.jpg",
-      "One_Arm_Cable_Curl/1.jpg"
-    ],
-    "id": "One_Arm_Cable_Curl"
+  "name": "One Arm Bayesian Curl",
+  "force": "pull",
+  "level": "intermediate",
+  "mechanic": "isolation",
+  "equipment": "cable",
+  "primaryMuscles": ["biceps"],
+  "secondaryMuscles": ["forearms"],
+  "instructions": [
+    "Stand with your back to a low pulley, holding a single handle in one hand. Step forward until the cable is under tension with your arm extended behind your body.",
+    "Keep your elbow slightly behind your torso and your feet stable. Rest your free hand on your hip or a support for balance. This is your starting position, with the biceps in a deep stretch.",
+    "Curl the handle forward and up toward your shoulder while keeping your upper arm still. Exhale as you curl.",
+    "Squeeze the biceps hard at the top for a second.",
+    "Slowly lower the handle back to the starting position until the biceps is fully stretched. Inhale as you lower.",
+    "Repeat for the recommended number of repetitions, then switch arms.",
+    "Tip: Do not swing your torso or let the elbow drift forward. The stretch under load is what makes this variation work."
+  ],
+  "category": "strength",
+  "images": ["One_Arm_Cable_Curl/0.jpg", "One_Arm_Cable_Curl/1.jpg"],
+  "id": "One_Arm_Cable_Curl"
   },
   {
     "name": "Incline Push-Up",
