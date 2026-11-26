@@ -31,6 +31,23 @@ export default function ProgramScreen() {
     load();
   }, [load]);
 
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+
+  // Copies this ready-made program into the user's own programs, then opens the copy
+  const addToMyPrograms = async () => {
+    if (!program || adding) return;
+    setAdding(true);
+    setAddError(null);
+    try {
+      const copy = await ProgramService.copy(program.id);
+      router.replace({ pathname: '/programs/[id]', params: { id: copy.id } } as any);
+    } catch (error) {
+      setAddError(error instanceof Error ? error.message : "Couldn't add the program");
+      setAdding(false);
+    }
+  };
+
   if (status === 'loading') {
     return (
       <SafeAreaView className="flex-1 bg-[#0B1422]">
@@ -103,6 +120,28 @@ export default function ProgramScreen() {
             ))}
           </View>
         </View>
+
+        {/* Ready-made programs are copied into the user's own programs */}
+        {program.isReadyMade && (
+          <>
+            <TouchableOpacity
+              onPress={addToMyPrograms}
+              disabled={adding}
+              activeOpacity={0.85}
+              className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-4"
+            >
+              {adding ? (
+                <ActivityIndicator color="#0B1422" />
+              ) : (
+                <>
+                  <Ionicons name="add-circle-outline" size={20} color="#0B1422" />
+                  <Text className="text-[#0B1422] font-bold">Add to my programs</Text>
+                </>
+              )}
+            </TouchableOpacity>
+            {addError && <Text className="text-[#F2A0A0] text-xs text-center mt-2">{addError}</Text>}
+          </>
+        )}
 
         {/* Routines */}
         <View className="mt-8 mb-4">

@@ -51,6 +51,7 @@ export interface Routine {
   description: string | null;
   imageKey: string | null;
   programId: string | null;
+  isReadyMade: boolean;
   sortOrder: number;
   updatedAt: string;
   exercises: RoutineExercise[];

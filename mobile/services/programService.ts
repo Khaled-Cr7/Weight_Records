@@ -1,4 +1,4 @@
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import type {
   ProgramDetail,
   ProgramListResponse,
@@ -16,6 +16,11 @@ export const ProgramService = {
   getById: (id: string): Promise<ProgramDetail> => {
     return apiGet<ProgramDetail>(`/api/programs/${encodeURIComponent(id)}`);
   },
+
+  // Copy a program (with all its routines) into the user's own programs
+  copy: (id: string): Promise<ProgramDetail> => {
+    return apiPost<ProgramDetail>(`/api/programs/${encodeURIComponent(id)}/copy`, {});
+  },
 };
 
 export const RoutineService = {
@@ -27,5 +32,10 @@ export const RoutineService = {
 
   getById: (id: string): Promise<Routine> => {
     return apiGet<Routine>(`/api/routines/${encodeURIComponent(id)}`);
+  },
+
+  // Copy a routine into the user's own routines (or into one of their programs)
+  copy: (id: string, programId?: string): Promise<Routine> => {
+    return apiPost<Routine>(`/api/routines/${encodeURIComponent(id)}/copy`, programId ? { programId } : {});
   },
 };

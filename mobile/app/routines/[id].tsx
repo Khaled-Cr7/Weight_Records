@@ -29,6 +29,23 @@ export default function RoutineScreen() {
     load();
   }, [load]);
 
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+
+  // Copies this ready-made routine into the user's own routines, then opens the copy
+  const addToMyRoutines = async () => {
+    if (!routine || adding) return;
+    setAdding(true);
+    setAddError(null);
+    try {
+      const copy = await RoutineService.copy(routine.id);
+      router.replace({ pathname: '/routines/[id]', params: { id: copy.id } } as any);
+    } catch (error) {
+      setAddError(error instanceof Error ? error.message : "Couldn't add the routine");
+      setAdding(false);
+    }
+  };
+
   if (status === 'loading') {
     return (
       <SafeAreaView className="flex-1 bg-[#0B1422]">
@@ -90,6 +107,28 @@ export default function RoutineScreen() {
               </View>
             ))}
           </View>
+        )}
+
+        {/* Ready-made routines are copied into the user's own routines */}
+        {routine.isReadyMade && (
+          <>
+            <TouchableOpacity
+              onPress={addToMyRoutines}
+              disabled={adding}
+              activeOpacity={0.85}
+              className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-6"
+            >
+              {adding ? (
+                <ActivityIndicator color="#0B1422" />
+              ) : (
+                <>
+                  <Ionicons name="add-circle-outline" size={20} color="#0B1422" />
+                  <Text className="text-[#0B1422] font-bold">Add to my routines</Text>
+                </>
+              )}
+            </TouchableOpacity>
+            {addError && <Text className="text-[#F2A0A0] text-xs text-center mt-2">{addError}</Text>}
+          </>
         )}
 
         {/* Exercises */}
