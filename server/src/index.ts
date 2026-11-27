@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.js";
 import programsRouter from "./routes/programs.js";
 import routinesRouter from "./routes/routines.js";
 import { checkAuthConfig } from "./lib/token.js";
+import workoutsRouter from "./routes/workouts.js";
 
 // Stop immediately if JWT_SECRET is missing
 checkAuthConfig();
@@ -23,6 +24,8 @@ app.use("/api/auth", authRouter);
 
 app.use("/api/programs", programsRouter);
 app.use("/api/routines", routinesRouter);
+
+app.use("/api/workouts", workoutsRouter);
 
 app.use("/api/exercises", exercisesRouter);
 
