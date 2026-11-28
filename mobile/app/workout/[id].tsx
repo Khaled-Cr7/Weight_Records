@@ -166,7 +166,7 @@ export default function WorkoutScreen() {
 
   // "Apply to all sets" panel (one exercise at a time)
   const [applyFor, setApplyFor] = useState<string | null>(null);
-  const [applyForm, setApplyForm] = useState({ weight: '', reps: '', min: '', max: '', mode: 'reps' as 'reps' | 'range' });
+  const [applyForm, setApplyForm] = useState({ weight: '', reps: '', min: '', max: '', mode: 'reps' as 'reps' | 'fixed' | 'range' });
 
   // Set options sheet
   const [sheet, setSheet] = useState<{ exerciseId: string; setId: string } | null>(null);
@@ -513,10 +513,11 @@ export default function WorkoutScreen() {
       if (weight === 'bad') return setError('Check the weight');
       if (weight !== null) patch.weightKg = weight;
     }
-    if (applyForm.mode === 'reps') {
+    if (applyForm.mode === 'reps' || applyForm.mode === 'fixed') {
       const reps = parseReps(applyForm.reps);
       if (reps === 'bad') return setError('Check the reps');
-      patch.repMode = 'REPS'; // every set becomes fixed reps (a typed number is also used as the reps)
+      if (applyForm.mode === 'reps' && reps === null && Object.keys(patch).length === 0) return setError('Type the reps you did');
+      if (applyForm.mode === 'fixed') patch.repMode = 'REPS'; // "Make fixed" changes every set to fixed reps
       if (reps !== null) patch.reps = reps;
     } else {
       const min = parseReps(applyForm.min);
@@ -839,22 +840,31 @@ export default function WorkoutScreen() {
                 {/* Apply to all */}
                 {applyOpen && (
                   <View className="bg-[#0F1B2E] border border-[#263B55] rounded-2xl p-3 mt-3">
-                    <View className="flex-row items-center">
-                      <Text className="text-[#F1F5FB] font-bold flex-1">Apply to all unticked sets</Text>
-                      <View className="flex-row bg-[#0B1422] rounded-lg p-0.5">
-                        {(['reps', 'range'] as const).map((mode) => (
-                          <TouchableOpacity
-                            key={mode}
-                            onPress={() => setApplyForm((previous) => ({ ...previous, mode }))}
-                            className={`h-8 px-3 rounded-md items-center justify-center ${applyForm.mode === mode ? 'bg-[#1D3558]' : ''}`}
-                          >
-                            <Text className={`text-xs font-bold ${applyForm.mode === mode ? 'text-[#8CB5EC]' : 'text-[#7186A1]'}`}>
-                              {mode === 'reps' ? 'Fixed' : 'Range'}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
+                    <Text className="text-[#F1F5FB] font-bold">Apply to all unticked sets</Text>
+
+                    <View className="flex-row bg-[#0B1422] rounded-xl p-1 mt-3">
+                      {([
+                        ['reps', 'Reps done'],
+                        ['fixed', 'Make fixed'],
+                        ['range', 'Make range'],
+                      ] as const).map(([mode, label]) => (
+                        <TouchableOpacity
+                          key={mode}
+                          onPress={() => setApplyForm((previous) => ({ ...previous, mode }))}
+                          className={`flex-1 h-10 rounded-lg items-center justify-center ${applyForm.mode === mode ? 'bg-[#1D3558]' : ''}`}
+                        >
+                          <Text className={`text-xs font-bold ${applyForm.mode === mode ? 'text-[#8CB5EC]' : 'text-[#7186A1]'}`}>{label}</Text>
+                        </TouchableOpacity>
+                      ))}
                     </View>
+
+                    <Text className="text-[#91A5C0] text-xs mt-2 leading-4">
+                      {applyForm.mode === 'reps'
+                        ? 'Writes the reps you did in every set. Sets keep their type (fixed or range).'
+                        : applyForm.mode === 'fixed'
+                          ? 'Changes every set to fixed reps. A number is optional and fills the reps too.'
+                          : 'Changes every set to a rep range (for example 8 to 12).'}
+                    </Text>
 
                     <View className="flex-row items-center gap-2 mt-3">
                       {showWeight && (
@@ -869,11 +879,11 @@ export default function WorkoutScreen() {
                           style={{ padding: 0, textAlign: 'center', fontSize: 15 }}
                         />
                       )}
-                      {applyForm.mode === 'reps' ? (
+                      {applyForm.mode !== 'range' ? (
                         <TextInput
                           value={applyForm.reps}
                           onChangeText={(text) => setApplyForm((previous) => ({ ...previous, reps: text }))}
-                          placeholder="Reps"
+                          placeholder={applyForm.mode === 'fixed' ? 'Reps (optional)' : 'Reps done'}
                           placeholderTextColor="#506680"
                           keyboardType="number-pad"
                           maxLength={3}
