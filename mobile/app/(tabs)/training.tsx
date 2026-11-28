@@ -10,10 +10,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { NameModal } from '@/components/NameModal';
+import { ActiveWorkoutBanner } from '@/components/ActiveWorkoutBanner';
+import { startWorkout } from '@/lib/startWorkout';
 import { ProgramCard } from '@/components/ProgramCard';
 import { plural } from '@/lib/routineFormat';
 import { ProgramService, RoutineService } from '@/services/programService';
 import type { ProgramSummary, RoutineSummary } from '@/services/types/program';
+
 
 export default function Training() {
   const router = useRouter();
@@ -75,6 +78,8 @@ export default function Training() {
           Build strength. Stay consistent.
         </Text>
 
+        <ActiveWorkoutBanner />
+
         {/* Quick start */}
         <View className="bg-[#192C46] border border-[#344C66] rounded-3xl p-5">
           <View className="flex-row justify-between items-center">
@@ -112,6 +117,26 @@ export default function Training() {
               </Text>
             </TouchableOpacity>
           )}
+        </View>
+
+        {/* Empty workout and history */}
+        <View className="flex-row gap-3 mt-4">
+          <TouchableOpacity
+            onPress={() => startWorkout(router)}
+            activeOpacity={0.85}
+            className="flex-1 h-12 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
+          >
+            <Ionicons name="add-circle-outline" size={19} color="#8CB5EC" />
+            <Text className="text-[#DCE6F4] font-semibold">Empty workout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/workout/history' as any)}
+            activeOpacity={0.85}
+            className="flex-1 h-12 rounded-xl bg-[#142238] border border-[#263B55] flex-row items-center justify-center gap-2"
+          >
+            <Ionicons name="time-outline" size={19} color="#8CB5EC" />
+            <Text className="text-[#DCE6F4] font-semibold">History</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Exercise library and Explore programs, side by side */}

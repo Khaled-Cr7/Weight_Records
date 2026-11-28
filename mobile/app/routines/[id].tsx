@@ -8,6 +8,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { SetTags } from '@/components/SetTags';
 import { countDrops, countSets, countWarmups, topMuscles } from '@/lib/routineFormat';
 import { SET_STYLE } from '@/lib/setStyle';
+import { startWorkout } from '@/lib/startWorkout';
 import { RoutineService } from '@/services/programService';
 import type { Routine } from '@/services/types/program';
 
@@ -191,8 +192,18 @@ export default function RoutineScreen() {
             )}
           </TouchableOpacity>
         ) : (
-          <View className="flex-row gap-3 mt-4">
+          <>
             <TouchableOpacity
+              onPress={() => startWorkout(router, routine.id)}
+              disabled={busy}
+              activeOpacity={0.85}
+              className="bg-[#719AD1] h-12 rounded-xl flex-row items-center justify-center gap-2 mt-4"
+            >
+              <Ionicons name="play" size={17} color="#0B1422" />
+              <Text className="text-[#0B1422] font-bold">Start workout</Text>
+            </TouchableOpacity>
+            <View className="flex-row gap-3 mt-3">
+              <TouchableOpacity
               onPress={() => router.push({ pathname: '/routine-editor', params: { id: routine.id } } as any)}
               disabled={busy}
               activeOpacity={0.85}
@@ -210,9 +221,10 @@ export default function RoutineScreen() {
               <Ionicons name="trash-outline" size={18} color="#F2A0A0" />
               <Text className="text-[#F2A0A0] font-semibold">Delete</Text>
             </TouchableOpacity>
-          </View>
+            </View>
+          </>
         )}
-
+          
         {actionError && <Text className="text-[#F2A0A0] text-xs text-center mt-3">{actionError}</Text>}
 
         {/* Exercises */}
