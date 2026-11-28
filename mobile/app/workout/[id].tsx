@@ -516,6 +516,7 @@ export default function WorkoutScreen() {
     if (applyForm.mode === 'reps') {
       const reps = parseReps(applyForm.reps);
       if (reps === 'bad') return setError('Check the reps');
+      patch.repMode = 'REPS'; // every set becomes fixed reps (a typed number is also used as the reps)
       if (reps !== null) patch.reps = reps;
     } else {
       const min = parseReps(applyForm.min);
@@ -848,7 +849,7 @@ export default function WorkoutScreen() {
                             className={`h-8 px-3 rounded-md items-center justify-center ${applyForm.mode === mode ? 'bg-[#1D3558]' : ''}`}
                           >
                             <Text className={`text-xs font-bold ${applyForm.mode === mode ? 'text-[#8CB5EC]' : 'text-[#7186A1]'}`}>
-                              {mode === 'reps' ? 'Reps' : 'Range'}
+                              {mode === 'reps' ? 'Fixed' : 'Range'}
                             </Text>
                           </TouchableOpacity>
                         ))}

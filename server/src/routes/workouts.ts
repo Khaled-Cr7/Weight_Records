@@ -484,7 +484,7 @@ router.delete("/:id/sets/:setId", async (req, res) => {
   }
 });
 
-// POST /api/workouts/:id/finish  -> save the workout (and, if asked, the new weights and reps in its routine)
+// POST /api/workouts/:id/finish  -> save the workout (and, if asked, copy what was done into its routine)
 router.post("/:id/finish", async (req, res) => {
   const parsed = workoutFinishSchema.safeParse(req.body ?? {});
   if (!parsed.success) {
@@ -505,19 +505,26 @@ router.post("/:id/finish", async (req, res) => {
         exercises: {
           select: {
             id: true,
+            restSeconds: true,
+            notes: true,
+            sourceRoutineExercise: {
+              select: {
+                id: true,
+                routine: { select: { id: true, ownerId: true, deletedAt: true } },
+                sets: { select: { id: true, setOrder: true }, orderBy: { setOrder: "asc" } },
+              },
+            },
             sets: {
+              orderBy: { setOrder: "asc" },
               select: {
                 id: true,
                 isCompleted: true,
                 weightKg: true,
                 reps: true,
-                sourceRoutineSet: {
-                  select: {
-                    id: true,
-                    repMode: true,
-                    routineExercise: { select: { routine: { select: { id: true, ownerId: true, deletedAt: true } } } },
-                  },
-                },
+                setType: true,
+                repMode: true,
+                targetRepsMin: true,
+                targetRepsMax: true,
               },
             },
           },
@@ -536,22 +543,44 @@ router.post("/:id/finish", async (req, res) => {
     let routineUpdated = false;
 
     await prisma.$transaction(async (tx) => {
-      // 1. Routine: completed sets copy their weight (and reps, for fixed-reps sets) into the routine.
-      //    Sets that were not completed keep their planned values.
+      // 1. Routine: each exercise of the routine becomes what was done in the workout
+      //    (the completed sets with their type, rep mode, weight and reps, plus rest time and note).
+      //    Exercises added to or removed from the workout are not copied to the routine.
       if (parsed.data.updateRoutine && session.sourceRoutineId) {
         const touched = new Set<string>();
-        for (const set of completed) {
-          const source = set.sourceRoutineSet;
-          const routine = source?.routineExercise.routine;
-          if (!source || !routine || routine.ownerId !== userId || routine.deletedAt !== null) continue;
+        for (const item of session.exercises) {
+          const source = item.sourceRoutineExercise;
+          const routine = source?.routine;
+          const done = item.sets.filter((set) => set.isCompleted);
+          if (!source || !routine || routine.ownerId !== userId || routine.deletedAt !== null || done.length === 0) continue;
 
-          await tx.routineSet.update({
+          await tx.routineExercise.update({
             where: { id: source.id },
-            data: {
-              ...(set.weightKg !== null ? { targetWeightKg: set.weightKg } : {}),
-              ...(source.repMode === "REPS" && set.reps !== null ? { targetReps: set.reps } : {}),
-            },
+            data: { restSeconds: item.restSeconds, notes: item.notes },
           });
+
+          for (let index = 0; index < done.length; index++) {
+            const set = done[index];
+            const data = {
+              setType: set.setType,
+              targetWeightKg: set.weightKg,
+              repMode: set.repMode,
+              targetReps: set.repMode === "REPS" ? set.reps : null,
+              targetRepsMin: set.repMode === "RANGE" ? set.targetRepsMin : null,
+              targetRepsMax: set.repMode === "RANGE" ? set.targetRepsMax : null,
+            };
+            const existing = source.sets[index];
+            if (existing) {
+              await tx.routineSet.update({ where: { id: existing.id }, data });
+            } else {
+              await tx.routineSet.create({ data: { ...data, routineExerciseId: source.id, setOrder: index + 1 } });
+            }
+          }
+
+          // Sets the routine had beyond what was done are removed
+          const extra = source.sets.slice(done.length).map((set) => set.id);
+          if (extra.length > 0) await tx.routineSet.deleteMany({ where: { id: { in: extra } } });
+
           touched.add(routine.id);
         }
         for (const routineId of touched) {
